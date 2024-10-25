@@ -3,7 +3,10 @@ import Content from './Content'
 
 const Course = ({ course }) => {
 
-  const totalExercises = course.parts.reduce((sum, part) => sum + part.exercises, 0)
+  const totalExercises = course.parts.reduce((sum, part) => {
+    console.log("Current sum:", sum, "Current part:", part)
+    return sum + part.exercises;
+  }, 0)
 
   return (
     <div>
