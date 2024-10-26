@@ -1,8 +1,8 @@
-# React + Vite
+### Course Management Project
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+The app displays course information, supporting multiple courses with respective sections and exercises.
 
-Currently, two official plugins are available:
+### Current Status
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- Exercise 2.5: Completed. The Course component and its subcomponents are in separate modules and imported into App.
+- Each course is rendered with its name, sections, and total exercise count.
