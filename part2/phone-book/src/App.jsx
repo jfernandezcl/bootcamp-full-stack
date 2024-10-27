@@ -1,7 +1,8 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import Filter from './components/Filter'
 import PersonsForm from './components/PersonsForm'
 import Persons from './components/Persons';
+import axios from 'axios';
 
 const App = () => {
   const [persons, setPersons] = useState([
@@ -34,6 +35,17 @@ const App = () => {
   const personsShow = persons.filter(person =>
     person.name.toLowerCase().includes(searchPerson.toLowerCase())
   )
+
+  useEffect(() => {
+    axios
+      .get('http://localhost:3001/persons')
+      .then(response => {
+        setPersons(response.data)
+      })
+      .catch(error => {
+        console.log('Error fetching data:', error)
+      })
+  }, [])
 
   return (
     <div>
