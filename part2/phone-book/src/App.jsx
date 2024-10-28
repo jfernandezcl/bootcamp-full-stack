@@ -19,6 +19,12 @@ const App = () => {
   const handleSearch = (e) => setSearchPerson(e.target.value)
   const handleName = (e) => setNewName(e.target.value)
   const handleNumber = (e) => setNewNumber(e.target.value)
+  const handleRemove = async (id) => {
+    if (window.confirm(`Are you sure you want to remove ${id}?`)) {
+      await personsService.remove(id)
+      setPersons(persons.filter(persons => persons.id !== id))
+    }
+  }
 
   useEffect(() => {
     personsService
@@ -30,6 +36,7 @@ const App = () => {
         console.log('Error fetching data:', error)
       })
   }, [])
+
 
 
   const addPerson = (event) => {
@@ -69,7 +76,7 @@ const App = () => {
         handleNumber={handleNumber}
       />
       <h2>Numbers</h2>
-      <Persons personsShow={personsShow} />
+      <Persons personsShow={personsShow} handleRemove={handleRemove} />
     </div>
   )
 }
