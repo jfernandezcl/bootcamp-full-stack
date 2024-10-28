@@ -26,10 +26,17 @@ const App = () => {
     if (persons.some(person => person.name === newName)) {
       alert(`${newName} is already added to phonebook`)
     } else {
-      setPersons([...persons, newPerson])
+      axios
+        .post('http://localhost:3001/persons', newPerson)
+        .then(response => {
+          setPersons([...persons, response.data])
+          setNewName('')
+          setNewNumber('')
+        })
+        .catch(error => {
+          console.error('Error adding person:', error)
+        })
     }
-    setNewName('')
-    setNewNumber('')
   }
 
   const personsShow = persons.filter(person =>
