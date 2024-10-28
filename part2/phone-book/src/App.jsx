@@ -3,6 +3,7 @@ import Filter from './components/Filter'
 import PersonsForm from './components/PersonsForm'
 import Persons from './components/Persons';
 import axios from 'axios';
+import personsService from './personsService';
 
 const App = () => {
   const [persons, setPersons] = useState([
@@ -19,6 +20,18 @@ const App = () => {
   const handleName = (e) => setNewName(e.target.value)
   const handleNumber = (e) => setNewNumber(e.target.value)
 
+  useEffect(() => {
+    personsService
+      .getAll()
+      .then(initialPersons => {
+        setPersons(initialPersons)
+      })
+      .catch(error => {
+        console.log('Error fetching data:', error)
+      })
+  }, [])
+
+
   const addPerson = (event) => {
     event.preventDefault()
     const newPerson = { name: newName, number: newNumber }
@@ -26,10 +39,10 @@ const App = () => {
     if (persons.some(person => person.name === newName)) {
       alert(`${newName} is already added to phonebook`)
     } else {
-      axios
-        .post('http://localhost:3001/persons', newPerson)
-        .then(response => {
-          setPersons([...persons, response.data])
+      personsService
+        .create(newPerson)
+        .then(returnedPerson => {
+          setPersons((persons.concat(returnedPerson)))
           setNewName('')
           setNewNumber('')
         })
@@ -42,17 +55,6 @@ const App = () => {
   const personsShow = persons.filter(person =>
     person.name.toLowerCase().includes(searchPerson.toLowerCase())
   )
-
-  useEffect(() => {
-    axios
-      .get('http://localhost:3001/persons')
-      .then(response => {
-        setPersons(response.data)
-      })
-      .catch(error => {
-        console.log('Error fetching data:', error)
-      })
-  }, [])
 
   return (
     <div>
