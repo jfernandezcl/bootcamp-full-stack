@@ -27,36 +27,32 @@ const App = () => {
   }
 
   useEffect(() => {
-    personsService
-      .getAll()
-      .then(initialPersons => {
-        setPersons(initialPersons)
-      })
-      .catch(error => {
-        console.log('Error fetching data:', error)
-      })
+    const fetchData = async () => {
+      const initialPersons = await personsService.getAll()
+      setPersons(initialPersons)
+    }
+    fetchData
   }, [])
 
 
 
-  const addPerson = (event) => {
+  const addPerson = async (event) => {
     event.preventDefault()
     const newPerson = { name: newName, number: newNumber }
+    const existingPerson = persons.find(person => person.name === newName)
 
-    if (persons.some(person => person.name === newName)) {
-      alert(`${newName} is already added to phonebook`)
-    } else {
-      personsService
-        .create(newPerson)
-        .then(returnedPerson => {
-          setPersons((persons.concat(returnedPerson)))
-          setNewName('')
-          setNewNumber('')
-        })
-        .catch(error => {
-          console.error('Error adding person:', error)
-        })
+    if (existingPerson) {
+      if (window.confirm(`${newName} already in the agenda, do you want to replace the number?`)) {
+        const updatedPerson = await personsService.update(existingPerson.id, newPerson)
+        setPersons(persons.map(persons => (persons.id === existingPerson.id ? updatedPerson : persons)))
+      }
     }
+    else {
+      const returnedPerson = await personsService.create(newPerson)
+      setPersons(persons.concat(returnedPerson))
+    }
+    setNewName('')
+    setNewNumber('')
   }
 
   const personsShow = persons.filter(person =>
