@@ -1,0 +1,9 @@
+.notification {
+  color: red;
+  background-color: lightblue;
+  font-size: 18px;
+  border-style: solid;
+  border-radius: 4px;
+  padding: 10px;
+  margin-bottom: 10px;
+}

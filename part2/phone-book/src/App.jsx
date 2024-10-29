@@ -4,6 +4,7 @@ import PersonsForm from './components/PersonsForm'
 import Persons from './components/Persons';
 import axios from 'axios';
 import personsService from './personsService';
+import Notification from './components/Notification'
 
 const App = () => {
   const [persons, setPersons] = useState([
@@ -15,6 +16,7 @@ const App = () => {
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
   const [searchPerson, setSearchPerson] = useState('')
+  const [notificationMessage, setNotificationMessage] = useState(null)
 
   const handleSearch = (e) => setSearchPerson(e.target.value)
   const handleName = (e) => setNewName(e.target.value)
@@ -45,11 +47,17 @@ const App = () => {
       if (window.confirm(`${newName} already in the agenda, do you want to replace the number?`)) {
         const updatedPerson = await personsService.update(existingPerson.id, newPerson)
         setPersons(persons.map(persons => (persons.id === existingPerson.id ? updatedPerson : persons)))
+
+        setNotificationMessage(`The number of ${newName} was successfully updated.`)
+        setTimeout(() => setNotificationMessage(null), 3000)
       }
     }
     else {
       const returnedPerson = await personsService.create(newPerson)
       setPersons(persons.concat(returnedPerson))
+
+      setNotificationMessage(`Added ${newName} to the agenda`)
+      setTimeout(() => setNotificationMessage(null), 3000)
     }
     setNewName('')
     setNewNumber('')
@@ -62,6 +70,7 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+      <Notification message={notificationMessage} />
       <Filter searchPerson={searchPerson} handleSearch={handleSearch} />
       <h3>add a new</h3>
       <PersonsForm
