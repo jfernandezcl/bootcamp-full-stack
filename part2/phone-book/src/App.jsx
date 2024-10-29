@@ -5,6 +5,8 @@ import Persons from './components/Persons';
 import axios from 'axios';
 import personsService from './personsService';
 import Notification from './components/Notification'
+import './index.css';
+
 
 const App = () => {
   const [persons, setPersons] = useState([
@@ -22,46 +24,67 @@ const App = () => {
   const handleName = (e) => setNewName(e.target.value)
   const handleNumber = (e) => setNewNumber(e.target.value)
   const handleRemove = async (id) => {
-    if (window.confirm(`Are you sure you want to remove ${id}?`)) {
-      await personsService.remove(id)
-      setPersons(persons.filter(persons => persons.id !== id))
+    const personToRemove = persons.find(person => person.id === id);
+    if (window.confirm(`Are you sure you want to remove ${personToRemove.name}?`)) {
+      try {
+        await personsService.remove(id);
+        setPersons(persons.filter(person => person.id !== id));
+      } catch (error) {
+        console.error('Error removing person:', error);
+        setNotificationMessage('Error removing person');
+        setTimeout(() => setNotificationMessage(null), 3000);
+      }
     }
-  }
+  };
+
 
   useEffect(() => {
     const fetchData = async () => {
-      const initialPersons = await personsService.getAll()
-      setPersons(initialPersons)
+      try {
+        const initialPersons = await personsService.getAll()
+        setPersons(initialPersons)
+      } catch (error) {
+        console.error('Error fetching persons:', error)
+        setNotificationMessage('Error fetching persons')
+        setTimeout(() => setNotificationMessage(null), 3000)
+      }
     }
-    fetchData
+    fetchData()
   }, [])
 
 
 
   const addPerson = async (event) => {
-    event.preventDefault()
-    const newPerson = { name: newName, number: newNumber }
-    const existingPerson = persons.find(person => person.name === newName)
+    event.preventDefault();
+    const newPerson = { name: newName, number: newNumber };
+    const existingPerson = persons.find(person => person.name === newName);
 
     if (existingPerson) {
       if (window.confirm(`${newName} already in the agenda, do you want to replace the number?`)) {
-        const updatedPerson = await personsService.update(existingPerson.id, newPerson)
-        setPersons(persons.map(persons => (persons.id === existingPerson.id ? updatedPerson : persons)))
-
-        setNotificationMessage(`The number of ${newName} was successfully updated.`)
-        setTimeout(() => setNotificationMessage(null), 3000)
+        try {
+          const updatedPerson = await personsService.update(existingPerson.id, newPerson);
+          setPersons(persons.map(person => (person.id === existingPerson.id ? updatedPerson : person)));
+          setNotificationMessage(`The number of ${newName} was successfully updated.`);
+        } catch (error) {
+          console.error('Error updating person:', error);
+          setNotificationMessage('Error updating person');
+        }
+      }
+    } else {
+      try {
+        const returnedPerson = await personsService.create(newPerson);
+        setPersons(persons.concat(returnedPerson));
+        setNotificationMessage(`Added ${newName} to the agenda`);
+      } catch (error) {
+        console.error('Error adding person:', error);
+        setNotificationMessage('Error adding person');
       }
     }
-    else {
-      const returnedPerson = await personsService.create(newPerson)
-      setPersons(persons.concat(returnedPerson))
+    setTimeout(() => setNotificationMessage(null), 3000);
+    setNewName('');
+    setNewNumber('');
+  };
 
-      setNotificationMessage(`Added ${newName} to the agenda`)
-      setTimeout(() => setNotificationMessage(null), 3000)
-    }
-    setNewName('')
-    setNewNumber('')
-  }
 
   const personsShow = persons.filter(person =>
     person.name.toLowerCase().includes(searchPerson.toLowerCase())
