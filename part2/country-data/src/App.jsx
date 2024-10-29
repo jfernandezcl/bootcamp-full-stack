@@ -6,6 +6,7 @@ import CountryList from "./components/CountryList";
 function App() {
   const [countries, setCountries] = useState([])
   const [searchTerm, setSearchTerm] = useState('')
+  const [selectedCountry, setSelectedCountry] = useState(null)
 
   const handleSearch = async (input) => {
     setSearchTerm(input)
@@ -13,11 +14,13 @@ function App() {
       try {
         const response = await axios.get(`https://restcountries.com/v3.1/name/${input}`)
         setCountries(response.data)
+        setSelectedCountry(null)
       } catch (error) {
         setCountries([])
       }
     } else {
       setCountries([])
+      setSelectedCountry(null)
     }
   }
 
@@ -25,7 +28,7 @@ function App() {
     <div>
       <h1>Country Finder</h1>
       <Search onSearch={handleSearch} />
-      <CountryList countries={countries} />
+      <CountryList countries={countries} selectedCountry={selectedCountry} setSelectedCountry={setSelectedCountry} />
     </div>
   )
 }
