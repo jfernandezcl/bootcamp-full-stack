@@ -12,6 +12,17 @@ router.get('/', (req, res) => {
   res.json(persons)
 })
 
+router.get('/:id', (req, res) => {
+  const id = parseInt(req.params.id)
+  const person = persons.find(p => p.id === id)
+
+  if (person) {
+    res.json(person)
+  } else {
+    res.status(404).send({ error: 'Person not found' })
+  }
+})
+
 router.get('/info', (req, res) => {
   const totalPersons = persons.length
   const requestTime = new Date()
