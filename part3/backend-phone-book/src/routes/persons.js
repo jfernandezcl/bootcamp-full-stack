@@ -23,6 +23,18 @@ router.get('/:id', (req, res) => {
   }
 })
 
+router.delete('/:id', (req, res) => {
+  const personId = parseInt(req.params.id)
+  const indexToRemove = phonebookEntries.findIndex(entry => entry.id === personId)
+
+  if (indexToRemove !== -1) {
+    phonebookEntries.splice(indexToRemove, 1)
+    res.status(204).end()
+  } else {
+    res.status(404).send({ error: 'Person not found' })
+  }
+})
+
 router.get('/info', (req, res) => {
   const totalPersons = persons.length
   const requestTime = new Date()
