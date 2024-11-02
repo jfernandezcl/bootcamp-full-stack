@@ -12,4 +12,14 @@ router.get('/', (req, res) => {
   res.json(persons)
 })
 
+router.get('/info', (req, res) => {
+  const totalPersons = persons.length
+  const requestTime = new Date()
+
+  res.send(`
+    <p>Phonebook has info for ${totalPersons} people</p>
+    <p>${requestTime}</p>
+    `)
+})
+
 module.exports = router;
