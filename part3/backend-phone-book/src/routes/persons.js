@@ -35,6 +35,15 @@ router.delete('/:id', (req, res) => {
   }
 })
 
+router.post('/', (req, res) => {
+  const { name, number } = req.body
+  const newId = Math.floor(Math.random() * 1000000)
+  const newEntry = { id: newId, name, number }
+
+  phonebookEntries.push(newEntry)
+  res.status(201).json(newEntry)
+})
+
 router.get('/info', (req, res) => {
   const totalPersons = persons.length
   const requestTime = new Date()
