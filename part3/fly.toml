@@ -1,0 +1,13 @@
+app = "your-app-name"
+
+[build]
+  dockerfile = "./Dockerfile"
+
+[env]
+  PORT = "3003"
+
+[[services]]
+  http_checks = []
+  [[services.ports]]
+    handlers = ["http"]
+    port = "3003"
