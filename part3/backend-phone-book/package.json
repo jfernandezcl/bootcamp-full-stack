@@ -1,23 +1,35 @@
 {
-  "name": "backend-phone-book",
+  "name": "tu-proyecto",
   "version": "1.0.0",
-  "description": "",
-  "main": "src/index.js",
   "scripts": {
-    "start": "node src/index.js",
-    "dev": "nodemon src/index.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject",
+    "lint": "eslint ."
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
   "dependencies": {
-    "cors": "^2.8.5",
-    "express": "^4.21.1",
-    "mongoose": "^8.8.0",
-    "morgan": "^1.10.0"
+    "react": "^17.0.0",
+    "react-dom": "^17.0.0",
+    "react-scripts": "4.0.0"
   },
-  "devDependencies": {
-    "nodemon": "^3.1.7"
+  "eslintConfig": {
+    "env": {
+      "browser": true,
+      "node": true
+    },
+    "extends": [
+      "eslint:recommended",
+      "plugin:react/recommended"
+    ],
+    "parserOptions": {
+      "ecmaVersion": 12,
+      "sourceType": "module"
+    },
+    "rules": {
+      "no-undef": "off",
+      "no-unused-vars": "off",
+      "react/prop-types": "off"
+    }
   }
 }
