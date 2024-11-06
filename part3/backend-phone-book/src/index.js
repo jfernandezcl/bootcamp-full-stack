@@ -1,10 +1,10 @@
 const express = require('express');
-const app = express();
 const morgan = require('morgan');
 const cors = require('cors');
 const path = require('path')
-
 const personsRouter = require('./routes/persons');
+
+const app = express()
 
 app.use(express.json());
 app.use(cors());
@@ -21,6 +21,17 @@ app.use(express.static(path.join(__dirname, '..', 'frontend-build')))
 
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, '..', 'frontend-build', 'index.html'))
+})
+
+app.use((error, req, res, next) => {
+  console.error(error.message)
+
+  if (error.name === 'CastError') {
+    return res.status(400).send({ error: 'Malformatted id' })
+  } else if (error.name === 'ValidationError') {
+    return res.status(400).send({ error: error.message })
+  }
+  next(error)
 })
 
 const PORT = 3003;
