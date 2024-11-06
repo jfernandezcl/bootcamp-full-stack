@@ -9,7 +9,7 @@ router.get('/', (req, res) => {
     .catch(error => next(error))
 });
 
-router.post('/', (req, res) => {
+router.post('/', (req, res, next) => {
   const { name, number } = req.body;
 
   if (!name || !number) {
@@ -20,11 +20,11 @@ router.post('/', (req, res) => {
 
   person.save()
     .then(savedPerson => res.json(savedPerson))
-    .catch(error => nex(error))
+    .catch(error => next(error))
 });
 
 router.delete('/:id', (req, res, next) => {
-  Person.findByIdAndRemove(req.param.id)
+  Person.findByIdAndRemove(req.params.id)
     .then(result => {
       if (result) {
         res.status(204).end()
