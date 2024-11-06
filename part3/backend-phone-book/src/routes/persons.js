@@ -3,11 +3,33 @@ const Person = require('../mongo')
 const router = express.Router();
 
 
-router.get('/', (req, res) => {
+router.get('/', (req, res, next) => {
   Person.find({})
     .then(persons => res.json(persons))
+    .catch(error => next(error));
+});
+
+
+router.get('/:id', (req, res, next) => {
+  Person.findById(req.params.id)
+    .then(person => {
+      if (person) {
+        res.json(person)
+      } else {
+        res.status(404).json({ error: 'person not found' })
+      }
+    })
     .catch(error => next(error))
 });
+
+router.get('/info', (req, res, next) => {
+  Person.countDocuments()
+    .then(count => {
+      const date = new Date()
+      res.send(`<p>Phonebook has info for ${count} people</p><p>${date}</p>`)
+    })
+    .catch(error => next(error))
+})
 
 router.post('/', (req, res, next) => {
   const { name, number } = req.body;
