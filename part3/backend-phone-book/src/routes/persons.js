@@ -42,7 +42,12 @@ router.post('/', (req, res, next) => {
 
   person.save()
     .then(savedPerson => res.json(savedPerson))
-    .catch(error => next(error))
+    .catch(error => {
+      if (error.name === 'validationError') {
+        return res.status(400).json({ error: error.message })
+      }
+      next(error)
+    })
 });
 
 // I had already implemented the delete function in exercise 3.14

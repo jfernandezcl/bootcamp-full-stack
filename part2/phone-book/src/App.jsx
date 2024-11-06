@@ -62,6 +62,13 @@ const App = () => {
       return
     }
 
+    const phoneRegex = /^\d{2,3}-\d+$/;
+    if (!phoneRegex.test(newNumber)) {
+      setNotificationMessage('Invalid phone number format. It should be in the format "XX-XXXXXXX" or "XXX-XXXXXXXX".');
+      setTimeout(() => setNotificationMessage(null), 3000);
+      return;
+    }
+
     const newPerson = { name: newName, number: newNumber };
     const existingPerson = persons.find(person => person.name === newName);
 
