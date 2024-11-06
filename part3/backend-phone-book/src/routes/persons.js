@@ -36,4 +36,26 @@ router.delete('/:id', (req, res, next) => {
     .catch(error => next(error))
 });
 
+router.put('/:id', (req, res, next) => {
+  const { number } = req.body
+
+  if (!number) {
+    return res.status(400).json({ error: 'number is required' })
+  }
+
+  Person.findByIdAndUpdate(
+    req.params.id,
+    { number },
+    { new: true, runValidators: true, context: 'query' }
+  )
+    .then(updatedPerson => {
+      if (updatedPerson) {
+        res.json(updatedPerson)
+      } else {
+        res.status(400).json({ error: 'person not found' })
+      }
+    })
+    .catch(error => next(error))
+})
+
 module.exports = router;
