@@ -23,6 +23,7 @@ router.post('/', (req, res, next) => {
     .catch(error => next(error))
 });
 
+// I had already implemented the delete function in exercise 3.14
 router.delete('/:id', (req, res, next) => {
   Person.findByIdAndRemove(req.params.id)
     .then(result => {
