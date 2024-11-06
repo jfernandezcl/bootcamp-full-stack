@@ -55,6 +55,13 @@ const App = () => {
 
   const addPerson = async (event) => {
     event.preventDefault();
+
+    if (newName.trim().length < 3) {
+      setNotificationMessage('Name mist have at least 3 characters')
+      setTimeout(() => setNotificationMessage(null), 3000)
+      return
+    }
+
     const newPerson = { name: newName, number: newNumber };
     const existingPerson = persons.find(person => person.name === newName);
 
