@@ -124,3 +124,23 @@ describe('favorite blog', () => {
     });
   });
 });
+
+describe('most likes', () => {
+  const blogs = [
+    { title: 'Blog 1', author: 'Author 1', likes: 5 },
+    { title: 'Blog 2', author: 'Author 2', likes: 10 },
+    { title: 'Blog 3', author: 'Author 1', likes: 12 },
+    { title: 'Blog 4', author: 'Author 3', likes: 8 },
+    { title: 'Blog 5', author: 'Author 2', likes: 15 },
+  ];
+
+  test('when list is empty, returns null', () => {
+    const result = listHelper.mostLikes([]);
+    assert.strictEqual(result, null);
+  });
+
+  test('returns the author with the most likes', () => {
+    const result = listHelper.mostLikes(blogs);
+    assert.deepStrictEqual(result, { author: 'Author 2', likes: 25 });
+  });
+});
