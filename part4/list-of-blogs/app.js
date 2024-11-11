@@ -1,16 +1,17 @@
-const express = require('express')
-const cors = require('cors')
-const mongoose = require('mongoose')
-const blogsRouter = require('./routes/blogs')
+const express = require('express');
+const mongoose = require('mongoose');
+const cors = require('cors');
+const app = express();
+const config = require('./config');
 
-const app = express()
+mongoose.connect(config.MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true })
+  .then(() => console.log('Connected to MongoDB'))
+  .catch(error => console.error('Error connecting to MongoDB:', error.message));
 
-const mongooseUrl = 'mongodb+srv://jfernandez:Harley-iron-883@cluster0.rilsr.mongodb.net/admin?retryWrites=true&loadBalanced=false&replicaSet=atlas-7d1pj3-shard-0&readPreference=primary&srvServiceName=mongodb&connectTimeoutMS=10000&w=majority&authSource=admin&authMechanism=SCRAM-SHA-1'
-mongoose.connect(mongooseUrl)
+app.use(cors());
+app.use(express.json());
 
-app.use(cors())
-app.use(express.json())
+const blogsRouter = require('./routes/blogs');
+app.use('/api/blogs', blogsRouter);
 
-app.use('/api/blogs', blogsRouter)
-
-module.exports = app
+module.exports = app;
