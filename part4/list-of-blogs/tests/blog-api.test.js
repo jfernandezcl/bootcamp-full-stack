@@ -23,10 +23,11 @@ const initialBlogs = [
 jest.setTimeout(30000);
 
 beforeEach(async () => {
-  console.log('Connecting to the database...');
   await Blog.deleteMany({});
-  let blogObject = new Blog(initialBlogs[0]);
-  await blogObject.save();
+  for (let blog of initialBlogs) {
+    let blogObject = new Blog(blog);
+    await blogObject.save();
+  }
 });
 
 test('blogs are returned as JSON and have the correct amount', async () => {
@@ -99,7 +100,7 @@ test('if likes property is missing, it defaults to 0', async () => {
   expect(response.body.likes).tobe(0)
 })
 
-test.only('should return 400 Bad Request if title or url is missing', async () => {
+test('should return 400 Bad Request if title or url is missing', async () => {
   const newBlogWithoutTitle = {
     author: 'Javi',
     url: 'http://example.com',
@@ -120,6 +121,26 @@ test.only('should return 400 Bad Request if title or url is missing', async () =
     .send(newBlogWithoutUrl)
     .expect(400)
 })
+
+test.only('a blog can be deleted', async () => {
+  const blogToDelete = initialBlogs[0]
+
+  const blogsAtStart = await api.get('/api/blogs')
+  await api.delete(`/api/blogs/${blogsAtStart.body[0].id}`)
+    .expect(204)
+
+  const blogsAtEnd = await api.get('/api/blogs')
+  expect(blogsAtEnd.body) - toHaveLength(blogsAtStart.body.length - 1)
+
+  expect(blogsAtEnd.body.map(blog => blog.title)).not.toContain(blogToDelete.title)
+})
+
+test.only('returns 404 if blog to delete does not exist', async () => {
+  const nonExistingId = mongoose.Types.ObjectId()
+  await api.delete(`/api/blogs/${nonExistingId}`)
+    .expect(404)
+})
+
 
 
 afterAll(async () => {
