@@ -37,6 +37,12 @@ test('blogs are returned as JSON and have the correct amount', async () => {
   expect(response.body).toHaveLength(initialBlogs.length);
 });
 
+test('the unique identifier property of blog posts is named id', async () => {
+  const response = await api.get('/api/blogs')
+  expect(response.body[0].id).toBeDefined()
+  expect(response.body[0]._id).not.toBeDefined()
+})
+
 test('a blog can be added', async () => {
   const newBlog = {
     title: 'New Blog Post',
