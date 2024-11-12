@@ -62,6 +62,29 @@ test('a blog can be added', async () => {
   expect(titles).toContain('New Blog Post');
 });
 
+test('a valid blog can be added and increases the total count by one', async () => {
+  const newBlog = {
+    title: 'Another New Blog',
+    author: 'Another Author',
+    url: 'http://anotherexample.com',
+    likes: 15,
+  }
+
+  const blogsAtStart = await api.get('/api/blogs')
+
+  await api.post('/api/blogs')
+    .send(newBlog)
+    .expect(201)
+    .expect('Content-Type', /application\/json/)
+
+  const blogsAtEnd = await api.get('/api/blogs')
+  expect(blogsAtEnd.body).toHaveLength(blogsAtStart.body.length + 1)
+
+  const contents = blogsAtEnd.body.map(b => b.title)
+  expect(contents).toContain(newBlog.title)
+})
+
+
 afterAll(async () => {
   await mongoose.connection.close();
 });
