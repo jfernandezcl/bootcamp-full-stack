@@ -84,7 +84,7 @@ test('a valid blog can be added and increases the total count by one', async () 
   expect(contents).toContain(newBlog.title)
 })
 
-test.only('if likes property is missing, it defaults to 0', async () => {
+test('if likes property is missing, it defaults to 0', async () => {
   const newBlog = {
     title: 'Blog Without Likes',
     author: 'No Likes Author',
@@ -97,6 +97,28 @@ test.only('if likes property is missing, it defaults to 0', async () => {
     .expect('Content-Type', /application\/json/)
 
   expect(response.body.likes).tobe(0)
+})
+
+test.only('should return 400 Bad Request if title or url is missing', async () => {
+  const newBlogWithoutTitle = {
+    author: 'Javi',
+    url: 'http://example.com',
+    likes: 10,
+  };
+
+  const newBlogWithoutUrl = {
+    title: 'New Blog Post',
+    author: 'Javi',
+    likes: 10,
+  };
+
+  await api.post('/api/blogs')
+    .send(newBlogWithoutTitle)
+    .expect(400)
+
+  await api.post('/api/blogs')
+    .send(newBlogWithoutUrl)
+    .expect(400)
 })
 
 
