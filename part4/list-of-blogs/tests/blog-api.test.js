@@ -122,7 +122,7 @@ test('should return 400 Bad Request if title or url is missing', async () => {
     .expect(400)
 })
 
-test.only('a blog can be deleted', async () => {
+test('a blog can be deleted', async () => {
   const blogToDelete = initialBlogs[0]
 
   const blogsAtStart = await api.get('/api/blogs')
@@ -135,13 +135,43 @@ test.only('a blog can be deleted', async () => {
   expect(blogsAtEnd.body.map(blog => blog.title)).not.toContain(blogToDelete.title)
 })
 
-test.only('returns 404 if blog to delete does not exist', async () => {
+test('returns 404 if blog to delete does not exist', async () => {
   const nonExistingId = mongoose.Types.ObjectId()
   await api.delete(`/api/blogs/${nonExistingId}`)
     .expect(404)
 })
 
+// test for the update
+test.only('likes can be updated', async () => {
+  const blogsAtStart = await api.get('/api/blogs')
+  const blogToUpdate = blogsAtStart.body[0]
 
+  const updatedLikes = blogToUpdate.likes + 1
+  const updatedBlog = { likes: updatedLikes }
+
+  const response = await api.put(`/api/blogs/${blogToUpdate.id}`)
+    .send(updatedBlog)
+    .expect(200)
+    .expect('Content-Type', /application\/json/)
+
+  expect(response.body.likes).toBe(updatedLikes)
+})
+
+test.only('returns 400 if likes is missing when updating', async () => {
+  const blogsAtStart = await api.get('/api/blogs')
+  const blogToUpdate = blogsAtStart.body[0]
+
+  await api.put(`/api/blogs/${blogToUpdate.id}`)
+    .send({})
+    .expect(400)
+})
+
+test.only('returns 404 if the blog to update does not exist', async () => {
+  const nonExistingId = mongoose.Types.ObjectId()
+  await api.put(`/api/blogs/${nonExistingId}`)
+    .send({ likes: 10 })
+    .expect(404)
+})
 
 afterAll(async () => {
   await mongoose.connection.close();
