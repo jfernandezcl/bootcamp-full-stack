@@ -157,7 +157,7 @@ test.only('likes can be updated', async () => {
   expect(response.body.likes).toBe(updatedLikes)
 })
 
-test.only('returns 400 if likes is missing when updating', async () => {
+test('returns 400 if likes is missing when updating', async () => {
   const blogsAtStart = await api.get('/api/blogs')
   const blogToUpdate = blogsAtStart.body[0]
 
@@ -166,7 +166,7 @@ test.only('returns 400 if likes is missing when updating', async () => {
     .expect(400)
 })
 
-test.only('returns 404 if the blog to update does not exist', async () => {
+test('returns 404 if the blog to update does not exist', async () => {
   const nonExistingId = mongoose.Types.ObjectId()
   await api.put(`/api/blogs/${nonExistingId}`)
     .send({ likes: 10 })
