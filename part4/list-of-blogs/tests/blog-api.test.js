@@ -3,7 +3,7 @@ const supertest = require('supertest');
 const app = require('../app');
 const api = supertest(app);
 const Blog = require('../models/blog');
-
+const User = require('../models/user')
 
 const initialBlogs = [
   {
@@ -24,8 +24,15 @@ jest.setTimeout(30000);
 
 beforeEach(async () => {
   await Blog.deleteMany({});
+  await Blog.deleteMany({});
+
+  const user = new User({ username: 'testuser', password: 'password123' })
+  await user.save()
+
+  token = jwt.sign({ id: user._id }, process.env.SECRET)
+
   for (let blog of initialBlogs) {
-    let blogObject = new Blog(blog);
+    let blogObject = new Blog({ ...blog, user: user._id });
     await blogObject.save();
   }
 });
@@ -142,7 +149,7 @@ test('returns 404 if blog to delete does not exist', async () => {
 })
 
 // test for the update
-test.only('likes can be updated', async () => {
+test('likes can be updated', async () => {
   const blogsAtStart = await api.get('/api/blogs')
   const blogToUpdate = blogsAtStart.body[0]
 
