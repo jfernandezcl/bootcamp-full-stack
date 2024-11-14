@@ -5,18 +5,27 @@ const User = require('../models/user');
 const createBlog = async (req, res) => {
   const { title, author, url, likes } = req.body;
 
-  const user = await User.findById(req.user.id); // Obtiene el usuario autenticado
-
-  const blog = new Blog({
-    title,
-    author,
-    url,
-    likes,
-    user: user._id
-  });
+  if (!req.user) {
+    return res.status(401).json({ error: 'Authentication required to create a blog' })
+  }
 
   try {
+    const user = await User.findById(req.user.id);
+    if (!user) {
+      return res.status(401).json({ error: 'User not found' })
+    }
+
+    const blog = new Blog({
+      title,
+      author,
+      url,
+      likes,
+      user: user._id
+    });
+
     const savedBlog = await blog.save();
+    user.blogs = user.blogs.concat(savedBlog._id)
+    await user.save()
     res.status(201).json(savedBlog);
   } catch (error) {
     res.status(400).json({ error: 'Error al crear el blog' });
