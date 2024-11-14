@@ -1,20 +1,23 @@
 const jwt = require('jsonwebtoken')
 
 const authenticateToken = (req, res, next) => {
-  const authHeader = req.headers.authorization
-  const token = authHeader && authHeader.split(' ')[1]
+  const token = req.token
 
   if (!token) {
     return res.status(401).json({ error: 'token missing' })
   }
 
-  jwt.verify(token, process.env.SECRET, (err, decodedToken) => {
-    if (err) {
-      return res.status(401).json({ error: 'token invalid' })
+  try {
+    const decodedToken = jwt.verify(token, process.env.SECRET)
+    if (!decodedToken.id) {
+      return res.status(401).json({ error: 'Invalid token' })
     }
-    res.user = decodedToken
+    req.userId = decodedToken.id
     next()
-  })
+  } catch (error) {
+    res.status(401).json({ error: 'Invalid or expired token' })
+  }
+
 }
 
 module.exports = authenticateToken 
