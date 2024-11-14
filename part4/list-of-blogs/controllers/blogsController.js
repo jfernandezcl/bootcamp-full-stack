@@ -4,6 +4,7 @@ const User = require('../models/user');
 
 const createBlog = async (req, res) => {
   const { title, author, url, likes } = req.body;
+  const user = req.user
 
   if (!req.user) {
     return res.status(401).json({ error: 'Authentication required to create a blog' })
@@ -44,18 +45,14 @@ const getBlogs = async (req, res) => {
 const deleteBlog = async (req, res) => {
   try {
     const blogId = (req.params.id)
-    const decodedToken = jwt.verify(req.token, process.env.SECRET)
-
-    if (!decodedToken.id) {
-      return res.status(401).json({ error: 'Invalid or missing token' })
-    }
+    const user = req.user
 
     const blog = await Blog.findById(blogId)
     if (!blog) {
       return res.status(404).json({ error: 'Blog not found' })
     }
 
-    if (blog.user.toString() !== decodedToken.id) {
+    if (blog.user.toString() !== user._id.toString()) {
       return res.status(403).json({ error: 'You do not have permission to delete this blog' })
     }
 

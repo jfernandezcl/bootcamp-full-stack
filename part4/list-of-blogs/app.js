@@ -6,6 +6,7 @@ const config = require('./config');
 const usersRouter = require('./routes/users')
 const loginRouter = require('./controllers/login');
 const tokenExtractor = require('./middlewares/tokenExtractor')
+const userExtractor = require('./middlewares/userExtractor')
 
 mongoose.connect(config.MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => console.log('Connected to MongoDB'))
@@ -18,8 +19,9 @@ app.use(tokenExtractor)
 
 const blogsRouter = require('./routes/blogs');
 const tokenExtractor = require('./middlewares/tokenExtractor');
-app.use('/api/blogs', blogsRouter);
 
+app.use(tokenExtractor)
+app.use('/api/blogs', userExtractor, blogsRouter);
 app.use('/api/users', usersRouter)
 app.use('/api/login', loginRouter);
 
