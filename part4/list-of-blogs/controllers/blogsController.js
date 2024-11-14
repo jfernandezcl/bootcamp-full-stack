@@ -42,18 +42,27 @@ const getBlogs = async (req, res) => {
 };
 
 const deleteBlog = async (req, res) => {
-  const { id } = req.params;
-
   try {
-    const deleteBlog = await Blog.findByIdAndDelete(id);
+    const blogId = (req.params.id)
+    const decodedToken = jwt.verify(req.token, process.env.SECRET)
 
-    if (!deleteBlog) {
-      return res.status(404).json({ error: 'Blog no encontrado' });
+    if (!decodedToken.id) {
+      return res.status(401).json({ error: 'Invalid or missing token' })
     }
 
-    res.status(204).end();
+    const blog = await Blog.findById(blogId)
+    if (!blog) {
+      return res.status(404).json({ error: 'Blog not found' })
+    }
+
+    if (blog.user.toString() !== decodedToken.id) {
+      return res.status(403).json({ error: 'You do not have permission to delete this blog' })
+    }
+
+    await Blog.findByIdAndDelete(blogId)
+    res.status(204).end()
   } catch (error) {
-    res.status(500).json({ error: 'Error al eliminar el blog' });
+    res.status(400).json({ error: 'Error when trying to delete the blog' })
   }
 };
 
