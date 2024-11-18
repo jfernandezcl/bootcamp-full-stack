@@ -4,11 +4,12 @@ import blogService from './services/blogs'
 import loginService from './services/login'
 import LoginForm from './components/LoginForm'
 import BlogForm from './components/BlogForm'
+import Notification from './components/Notification'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
   const [user, setUser] = useState(null)
-  const [errorMessage, setErrorMessage] = useState('')
+  const [notification, setNotification] = useState('')
 
   useEffect(() => {
     const loggedUserJSON = localStorage.getItem('loggedBlogUser')
@@ -25,44 +26,44 @@ const App = () => {
     }
   }, [user])
 
-
   const handleLogin = async (credentials) => {
     try {
       const loggedInUser = await loginService.login(credentials)
       localStorage.setItem('loggedBlogUser', JSON.stringify(loggedInUser))
       setUser(loggedInUser)
       blogService.setToken(loggedInUser.token)
-      setErrorMessage('')
+      showNotification('Login successful')
     } catch (error) {
-      setErrorMessage('Invalid username or password')
-      setTimeout(() => setErrorMessage(''), 5000)
+      showNotification('Invalid username or password')
     }
   }
 
   const handleLogout = () => {
     localStorage.removeItem('loggedBlogUser')
     setUser(null)
+    showNotification('Logged out successfully')
   }
 
-  const createBlog = (blog) => {
-    blogService
-      .create(blog)
-      .then((newBlog) => {
-        setBlogs(blogs.concat(newBlog))
-      })
-      .catch((error) => {
-        console.error('Error when creating the blog:', error)
-        setErrorMessage('Error adding blog')
-        setTimeout(() => setErrorMessage(''), 5000)
-      })
+  const createBlog = async (blog) => {
+    try {
+      const newBlog = await blogService.create(blog)
+      setBlogs(blogs.concat(newBlog))
+      showNotification(`Blog "${newBlog.title}" added successfully`)
+    } catch (error) {
+      showNotification('Error adding blog')
+    }
   }
 
+  const showNotification = (message) => {
+    setNotification(message)
+    setTimeout(() => setNotification(''), 5000)
+  }
 
   if (!user) {
     return (
       <div>
         <h2>Log in to application</h2>
-        {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
+        <Notification message={notification} />
         <LoginForm handleLogin={handleLogin} />
       </div>
     )
@@ -70,13 +71,18 @@ const App = () => {
 
   return (
     <div>
-      <h2>blogs</h2>
-      <p>Logged in as {user.name} <button onClick={handleLogout}>Logout</button>
+      <h2>Blogs</h2>
+      <Notification message={notification} />
+      <p>
+        Logged in as {user.name}{' '}
+        <button onClick={handleLogout}>Logout</button>
       </p>
       <BlogForm createBlog={createBlog} />
-      {blogs.map(blog => (
-        <Blog key={blog.id} blog={blog} />
-      ))}
+      <div>
+        {blogs.map((blog) => (
+          <Blog key={blog.id} blog={blog} />
+        ))}
+      </div>
     </div>
   )
 }
