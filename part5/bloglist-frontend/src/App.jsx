@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import Blog from './components/Blog'
 import blogService from './services/blogs'
 import loginService from './services/login'
+import LoginForm from './components/LoginForm'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
@@ -48,7 +49,7 @@ const App = () => {
       <div>
         <h2>Log in to application</h2>
         {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
-        <LoginFrom handleLogin={handleLogin} />
+        <LoginForm handleLogin={handleLogin} />
       </div>
     )
   }
@@ -56,7 +57,8 @@ const App = () => {
   return (
     <div>
       <h2>blogs</h2>
-      <p>Logged in as {user.name}</p>
+      <p>Logged in as {user.name} <button onClick={handleLogout}>Logout</button>
+      </p>
       {blogs.map(blog => (
         <Blog key={blog.id} blog={blog} />
       ))}
