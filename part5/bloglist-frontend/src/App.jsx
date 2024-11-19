@@ -43,55 +43,53 @@ const App = () => {
     localStorage.removeItem('loggedBlogUser')
     setUser(null)
     showNotification('Logged out successfully')
+
+    const createBlog = async (blog) => {
+      try {
+        const newBlog = await blogService.create(blog)
+        setBlogs(blogs.concat(newBlog))
+        showNotification(`Blog "${newBlog.title}" added successfully`)
+        showNotification('Error adding blog', true)
+      }
   }
 
-  const createBlog = async (blog) => {
-    try {
-      const newBlog = await blogService.create(blog)
-      setBlogs(blogs.concat(newBlog))
-      showNotification(`Blog "${newBlog.title}" added successfully`)
-    } catch (error) {
-      showNotification('Error adding blog', true)
+    const showNotification = (message, isError = false) => {
+      setNotification({ message, isError })
+      setTimeout(() => setNotification(null), 5000)
     }
-  }
 
-  const showNotification = (message, isError = false) => {
-    setNotification({ message, isError })
-    setTimeout(() => setNotification(null), 5000)
-  }
+    if (!user) {
+      return (
+        <div>
+          <h2>Log in to application</h2>
+          {notification && (
+            <Notification message={notification.message} isError={notification.isError} />
+          )}
+          <LoginForm handleLogin={handleLogin} />
+        </div>
+      )
+    }
 
-  if (!user) {
     return (
       <div>
-        <h2>Log in to application</h2>
+        <h2>Blogs</h2>
         {notification && (
           <Notification message={notification.message} isError={notification.isError} />
         )}
-        <LoginForm handleLogin={handleLogin} />
+        <p>
+          Logged in as {user.name}{' '}
+          <button onClick={handleLogout}>Logout</button>
+        </p>
+        <Togglable buttonLabel="Create new blog">
+          <BlogForm createBlog={createBlog} />
+        </Togglable>
+        <div>
+          {blogs.map((blog) => (
+            <Blog key={blog.id} blog={blog} />
+          ))}
+        </div>
       </div>
     )
   }
 
-  return (
-    <div>
-      <h2>Blogs</h2>
-      {notification && (
-        <Notification message={notification.message} isError={notification.isError} />
-      )}
-      <p>
-        Logged in as {user.name}{' '}
-        <button onClick={handleLogout}>Logout</button>
-      </p>
-      <Togglable buttonLabel="Create new blog">
-        <BlogForm createBlog={createBlog} />
-      </Togglable>
-      <div>
-        {blogs.map((blog) => (
-          <Blog key={blog.id} blog={blog} />
-        ))}
-      </div>
-    </div>
-  )
-}
-
-export default App
+  export default App
