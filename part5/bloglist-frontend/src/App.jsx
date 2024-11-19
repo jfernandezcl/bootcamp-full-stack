@@ -5,6 +5,7 @@ import loginService from './services/login'
 import LoginForm from './components/LoginForm'
 import BlogForm from './components/BlogForm'
 import Notification from './components/Notification'
+import Togglable from './components/Togglable'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
@@ -22,7 +23,7 @@ const App = () => {
 
   useEffect(() => {
     if (user) {
-      blogService.getAll().then(blogs => setBlogs(blogs))
+      blogService.getAll().then((blogs) => setBlogs(blogs))
     }
   }, [user])
 
@@ -34,7 +35,7 @@ const App = () => {
       blogService.setToken(loggedInUser.token)
       showNotification('Login successful')
     } catch (error) {
-      showNotification('Invalid username or password')
+      showNotification('Invalid username or password', true)
     }
   }
 
@@ -50,20 +51,22 @@ const App = () => {
       setBlogs(blogs.concat(newBlog))
       showNotification(`Blog "${newBlog.title}" added successfully`)
     } catch (error) {
-      showNotification('Error adding blog')
+      showNotification('Error adding blog', true)
     }
   }
 
-  const showNotification = (message) => {
-    setNotification(message)
-    setTimeout(() => setNotification(''), 5000)
+  const showNotification = (message, isError = false) => {
+    setNotification({ message, isError })
+    setTimeout(() => setNotification(null), 5000)
   }
 
   if (!user) {
     return (
       <div>
         <h2>Log in to application</h2>
-        <Notification message={notification} />
+        {notification && (
+          <Notification message={notification.message} isError={notification.isError} />
+        )}
         <LoginForm handleLogin={handleLogin} />
       </div>
     )
@@ -72,12 +75,16 @@ const App = () => {
   return (
     <div>
       <h2>Blogs</h2>
-      <Notification message={notification} />
+      {notification && (
+        <Notification message={notification.message} isError={notification.isError} />
+      )}
       <p>
         Logged in as {user.name}{' '}
         <button onClick={handleLogout}>Logout</button>
       </p>
-      <BlogForm createBlog={createBlog} />
+      <Togglable buttonLabel="Create new blog">
+        <BlogForm createBlog={createBlog} />
+      </Togglable>
       <div>
         {blogs.map((blog) => (
           <Blog key={blog.id} blog={blog} />
