@@ -5,6 +5,15 @@ const Blog = ({ blog }) => {
 
   const toggleDetails = () => setDetailsVisible(!detailsVisible)
 
+  const handleLike = async () => {
+    const updatedBlog = {
+      ...blog,
+      likes: blog.likes + 1,
+      user: blog.user.id
+    }
+    await updateBlog(blog.id, updatedBlog)
+  }
+
   const blogStyle = {
     paddingTop: 10,
     paddingLeft: 2,
