@@ -49,9 +49,10 @@ const App = () => {
         const newBlog = await blogService.create(blog)
         setBlogs(blogs.concat(newBlog))
         showNotification(`Blog "${newBlog.title}" added successfully`)
+      } catch (error) {
         showNotification('Error adding blog', true)
       }
-  }
+    }
 
     const showNotification = (message, isError = false) => {
       setNotification({ message, isError })
