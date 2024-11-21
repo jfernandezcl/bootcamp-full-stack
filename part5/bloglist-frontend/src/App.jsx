@@ -116,4 +116,24 @@ const App = () => {
 
 }
 
+Blog.propTypes = {
+  blog: PropTypes.shape({
+    id: PropTypes.string.isRequired,
+    title: PropTypes.string.isRequired,
+    author: PropTypes.string.isRequired,
+    url: PropTypes.string.isRequired,
+    likes: PropTypes.number.isRequired,
+    user: PropTypes.shape({
+      id: PropTypes.string.isRequired,
+      name: PropTypes.string,
+      username: PropTypes.string.isRequired,
+    }).isRequired,
+  }).isRequired,
+  updateBlog: PropTypes.func.isRequired,
+  deleteBlog: PropTypes.func.isRequired,
+  currentUser: PropTypes.shape({
+    username: PropTypes.string.isRequired,
+  }).isRequired,
+}
+
 export default App
