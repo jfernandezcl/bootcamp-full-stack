@@ -76,7 +76,7 @@ const updateBlog = async (req, res) => {
       id,
       { likes },
       { new: true }
-    );
+    ).populate('user', 'username name')
 
     if (!updatedBlog) {
       return res.status(404).json({ error: 'Blog no encontrado' });
