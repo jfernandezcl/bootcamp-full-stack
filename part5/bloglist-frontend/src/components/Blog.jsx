@@ -1,6 +1,8 @@
 import PropTypes from 'prop-types'
+import { useState } from 'react';
 
 const Blog = ({ blog, updateBlog, deleteBlog, currentUser }) => {
+  const [showDetails, setShowDetails] = useState(false);
   const handleLike = () => {
     const updatedBlog = { ...blog, likes: blog.likes + 1 }
     updateBlog(blog.id, updatedBlog)
@@ -13,13 +15,21 @@ const Blog = ({ blog, updateBlog, deleteBlog, currentUser }) => {
   return (
     <div>
       <h3>{blog.title} by {blog.author}</h3>
-      <p>{blog.url}</p>
-      <p>{blog.likes} likes <button onClick={handleLike}>like</button></p>
-      {currentUser && currentUser.username === blog.user.username && (
-        <button onClick={handleDelete}>delete</button>
+      <button onClick={() => setShowDetails(!showDetails)}>
+        {showDetails ? 'Hide details' : 'Show details'}
+      </button>
+      {showDetails && (
+        <div>
+          <p>URL: {blog.url}</p>
+          <p>Likes: {blog.likes}</p>
+          <button onClick={handleLike}>Like</button>
+          {currentUser && blog.user && blog.user.username === currentUser.username && (
+            <button onClick={handleDelete}>Delete</button>
+          )}
+        </div>
       )}
     </div>
-  )
+  );
 }
 
 Blog.propTypes = {
