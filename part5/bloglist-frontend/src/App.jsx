@@ -1,4 +1,6 @@
+/* eslint-disable no-unused-vars */
 import { useState, useEffect } from 'react'
+import PropTypes from 'prop-types'
 import Blog from './components/Blog'
 import blogService from './services/blogs'
 import loginService from './services/login'
@@ -60,6 +62,31 @@ const App = () => {
     setTimeout(() => setNotification(null), 5000)
   }
 
+  const updatedBlog = async (id, updatedBlog) => {
+    try {
+      const returnedBlog = await blogService.update(id, updatedBlog)
+      setBlogs(blogs.map((blog) => (blog.id === id ? returnedBlog : blog)))
+      showNotification(`Blog "${returnedBlog.title}" updated successfully`)
+    } catch (error) {
+      console.error('Error updating blog:', error)
+      showNotification('Error updating blog', true)
+    }
+  }
+
+  const deleteBlog = async (id) => {
+    try {
+      const blogToDelete = blogs.find((b) => b.id === id)
+      const confirm = window.confirm(`Do you really want to delete "${blogToDelete.title}"?`)
+      if (!confirm) return
+      await blogService.remove(id)
+      setBlogs(blogs.filter((blog) => blog.id !== id))
+      showNotification(`Blog "${blogToDelete.title}" deleted successfully`)
+    } catch (error) {
+      console.error('Error deleting blog:', error)
+      showNotification('Error deleting blog', true)
+    }
+  }
+
   if (!user) {
     return (
       <div>
@@ -70,17 +97,6 @@ const App = () => {
         <LoginForm handleLogin={handleLogin} />
       </div>
     )
-  }
-
-  const updateBlog = async (id, updatedBlog) => {
-    try {
-      const returnedBlog = await blogService.update(id, updatedBlog)
-      setBlogs(
-        blogs.map((blog) => (blog.id === id ? returnedBlog : blog))
-      )
-    } catch (error) {
-      console.error('Error updating blog:', error)
-    }
   }
 
   return (
@@ -97,43 +113,27 @@ const App = () => {
         <BlogForm createBlog={createBlog} />
       </Togglable>
       <div>
-        {/* Ordena los blogs antes de mostrarlos */}
         {blogs
           .slice()
-          .sort((a, b) => b.likes - a.likes) // Orden descendente por likes
+          .sort((a, b) => b.likes - a.likes)
           .map((blog) => (
             <Blog
               key={blog.id}
               blog={blog}
-              updateBlog={(updatedBlog) =>
-                setBlogs(blogs.map((b) => (b.id === updatedBlog.id ? updatedBlog : b)))
-              }
+              updateBlog={(updatedBlog) => updatedBlog(blog.id, updatedBlog)}
+              deleteBlog={deleteBlog}
+              currentUser={user}
             />
           ))}
       </div>
     </div>
-  );
-
+  )
 }
 
-Blog.propTypes = {
-  blog: PropTypes.shape({
-    id: PropTypes.string.isRequired,
-    title: PropTypes.string.isRequired,
-    author: PropTypes.string.isRequired,
-    url: PropTypes.string.isRequired,
-    likes: PropTypes.number.isRequired,
-    user: PropTypes.shape({
-      id: PropTypes.string.isRequired,
-      name: PropTypes.string,
-      username: PropTypes.string.isRequired,
-    }).isRequired,
-  }).isRequired,
-  updateBlog: PropTypes.func.isRequired,
-  deleteBlog: PropTypes.func.isRequired,
-  currentUser: PropTypes.shape({
-    username: PropTypes.string.isRequired,
-  }).isRequired,
+App.propTypes = {
+  blogs: PropTypes.array.isRequired,
+  user: PropTypes.object,
+  notification: PropTypes.object,
 }
 
 export default App
