@@ -47,6 +47,18 @@ describe('Blog app', function () {
 
       cy.contains('New Blog Title').parent().contains('1');
     });
+
+    it('A user can delete a blog they created', function () {
+      cy.contains('Create new blog').click();
+      cy.get('input[name="title"]').type('New Blog Title');
+      cy.get('input[name="author"]').type('Blog Author');
+      cy.get('input[name="url"]').type('https://example.com');
+      cy.get('button[type="submit"]').click();
+
+      cy.contains('New Blog Title').should('be.visible');
+      cy.contains('New Blog Title').parent().find('button').contains('Delete').click();
+      cy.contains('New Blog Title').should('not.exist');
+    })
   })
 
 })
