@@ -19,6 +19,7 @@ describe('Blog app', function () {
       cy.get('input[name="password"]').type('password123');
       cy.get('button[type="submit"]').click();
     });
+
     it('A blog can be created', function () {
       cy.contains('Create new blog').click();
       cy.get('input[name="title"]').type('New Blog Title');
@@ -28,6 +29,24 @@ describe('Blog app', function () {
       cy.contains('New Blog Title').should('be.visible');
       cy.contains('Blog Author').should('be.visible');
     })
+
+    it('A user can like a blog', function () {
+
+      cy.contains('Create new blog').click();
+      cy.get('input[name="title"]').type('New Blog Title');
+      cy.get('input[name="author"]').type('Blog Author');
+      cy.get('input[name="url"]').type('https://example.com');
+      cy.get('button[type="submit"]').click();
+
+
+      cy.contains('New Blog Title').parent().contains('0');
+
+
+      cy.contains('New Blog Title').parent().contains('like').click();
+
+
+      cy.contains('New Blog Title').parent().contains('1');
+    });
   })
 
 })
