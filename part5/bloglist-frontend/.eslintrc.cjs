@@ -2,12 +2,14 @@ module.exports = {
   root: true,
   env: {
     browser: true,
-    es2020: true
+    es2020: true,
+    "cypress/globals": true,
   },
   extends: [
     'eslint:recommended',
     'plugin:react/recommended',
     'plugin:react/jsx-runtime',
+    "plugin:cypress/recommended",
     'plugin:react-hooks/recommended'
   ],
   ignorePatterns: ['dist', '.eslintrc.cjs'],
@@ -21,11 +23,12 @@ module.exports = {
     }
   },
   plugins: ['react-refresh'],
+  plugins: ["cypress"],
   rules: {
     'react-refresh/only-export-components': [
       'warn',
       { allowConstantExport: true }
     ],
-    'react/prop-types': 'off'  // Desactiva la regla de prop-types
+    'react/prop-types': 'off'
   }
 }
