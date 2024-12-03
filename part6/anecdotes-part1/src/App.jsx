@@ -19,7 +19,7 @@ const App = () => {
     }
   }
 
-  const sortedAnecdotes = [...anecdotes].sort((a, b) => b.sort - a.votes)
+  const sortedAnecdotes = [...anecdotes].sort((a, b) => b.votes - a.votes)
 
   return (
     <div>

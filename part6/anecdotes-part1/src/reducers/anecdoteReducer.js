@@ -26,12 +26,12 @@ const reducer = (state = initialState, action) => {
   switch (action.type) {
     case 'VOTE':
       return state.map((anecdote) =>
-        anecdote.id === action.playload
+        anecdote.id === action.payload
           ? { ...anecdote, votes: anecdote.votes + 1 }
           : anecdote
       )
     case 'NEW_ANECDOTE':
-      return [...state, action.playload]
+      return [...state, action.payload]
     default:
       return state
   }
@@ -43,7 +43,7 @@ export const createAnecdote = (content) => {
     payload: {
       content,
       id: (100000 * Math.random()).toFixed(0),
-      vote: 0,
+      votes: 0,
     }
   }
 }
