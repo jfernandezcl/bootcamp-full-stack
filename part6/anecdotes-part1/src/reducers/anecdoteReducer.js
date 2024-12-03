@@ -30,15 +30,28 @@ const reducer = (state = initialState, action) => {
           ? { ...anecdote, votes: anecdote.votes + 1 }
           : anecdote
       )
+    case 'NEW_ANECDOTE':
+      return [...state, action.playload]
     default:
       return state
+  }
+}
+
+export const createAnecdote = (content) => {
+  return {
+    type: 'NEW_ANECDOTE',
+    payload: {
+      content,
+      id: (100000 * Math.random()).toFixed(0),
+      vote: 0,
+    }
   }
 }
 
 export const voteAnecdote = (id) => {
   return {
     type: 'VOTE',
-    playload: id,
+    payload: id,
   }
 }
 
