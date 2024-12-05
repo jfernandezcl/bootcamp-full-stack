@@ -8,7 +8,7 @@ const AnecdoteForm = () => {
     event.preventDefault()
     const content = event.target.anecdote.value
     if (content.trim()) {
-      dispatch(createAnecdote(content))
+      dispatch(createAnecdote({ content, id: (100000 * Math.random()).toFixed(0), votes: 0 }))
       event.target.anecdote.value = ''
     }
   }
