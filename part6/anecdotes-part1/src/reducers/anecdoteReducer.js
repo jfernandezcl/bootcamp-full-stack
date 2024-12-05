@@ -2,7 +2,6 @@ import { createSlice } from '@reduxjs/toolkit'
 import { setTimedNotification } from '../notificationReducer'
 import axios from 'axios'
 
-const getId = () => (100000 * Math.random()).toFixed(0)
 
 const asObject = (anecdote) => {
   return {
@@ -28,13 +27,13 @@ const anecdoteSlice = createSlice({
     },
     createAnecdote(state, action) {
       const newAnecdote = {
-        content: action.payload,
-        id: getId(),
-        votes: 0
+        content: action.payload.content,
+        id: action.payload.id,
+        votes: 0,
       }
       return [...state, newAnecdote]
     },
-    setAnecdotes(state, action) {
+    setAnecdotes(action) {
       return action.payload
     }
   },
@@ -49,6 +48,26 @@ export const initializeAnecdotes = () => {
   }
 }
 
+
+export const handleCreateAnecdote = (content) => {
+  return async (dispatch) => {
+
+    const newAnecdote = {
+      content,
+      votes: 0,
+    }
+
+
+    const response = await axios.post('http://localhost:3001/anecdotes', newAnecdote)
+
+
+    dispatch(createAnecdote(response.data))
+
+
+    dispatch(setTimedNotification(`You created '${content}'`, 5000))
+  }
+}
+
 export const { voteAnecdote, createAnecdote, setAnecdotes } = anecdoteSlice.actions
 
 export const handleVote = (id) => {
@@ -56,13 +75,6 @@ export const handleVote = (id) => {
     dispatch(voteAnecdote(id))
     const anecdote = getState().anecdotes.find((a) => a.id === id)
     dispatch(setTimedNotification(`You voted '${anecdote.content}'`, 5000))
-  }
-}
-
-export const handleCreateAnecdote = (content) => {
-  return (dispatch) => {
-    dispatch(createAnecdote(content))
-    dispatch(setTimedNotification(`You created '${content}'`, 5000))
   }
 }
 

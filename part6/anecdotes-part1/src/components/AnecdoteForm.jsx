@@ -1,24 +1,30 @@
+import { useState } from 'react'
 import { useDispatch } from 'react-redux'
 import { handleCreateAnecdote } from '../reducers/anecdoteReducer'
 
 const AnecdoteForm = () => {
+  const [content, setContent] = useState('')
   const dispatch = useDispatch()
 
-  const addAnecdote = (event) => {
+  const handleSubmit = (event) => {
     event.preventDefault()
-    const content = event.target.anecdote.value
-    if (content.trim()) {
+    if (content) {
       dispatch(handleCreateAnecdote(content))
-      event.target.anecdote.value = ''
+      setContent('')
     }
   }
 
   return (
-    <form onSubmit={addAnecdote}>
-      <h2>create new</h2>
-      <div><input name='anecdote' /></div>
-      <button type='submit'>create</button>
-    </form>
+    <div>
+      <h2>Create new anecdote</h2>
+      <form onSubmit={handleSubmit}>
+        <input
+          value={content}
+          onChange={(e) => setContent(e.target.value)}
+        />
+        <button type="submit">Create</button>
+      </form>
+    </div>
   )
 }
 
