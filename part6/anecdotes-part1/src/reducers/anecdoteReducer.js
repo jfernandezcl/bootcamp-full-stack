@@ -46,7 +46,7 @@ export const handleCreateAnecdote = (content) => {
 
     dispatch(createAnecdote(response.data))
 
-    dispatch(setTimedNotification(`You created '${content}'`, 5000))
+    dispatch(setTimedNotification(`You created '${content}'`, 5))
   }
 }
 
@@ -61,7 +61,7 @@ export const handleVote = (id) => {
       const updatedAnecdote = { ...anecdoteToVote, votes: anecdoteToVote.votes + 1 }
       const response = await axios.put(`http://localhost:3001/anecdotes/${id}`, updatedAnecdote)
       dispatch(voteAnecdote(response.data))
-      dispatch(setTimedNotification(`You voted '${anecdoteToVote.content}'`, 5000))
+      dispatch(setTimedNotification(`You voted '${anecdoteToVote.content}'`, 5))
     }
   }
 }
