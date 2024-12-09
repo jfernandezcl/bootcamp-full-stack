@@ -1,10 +1,8 @@
-import { useSelector, useDispatch } from 'react-redux'
+import { useSelector } from 'react-redux'
 import { useQuery } from '@tanstack/react-query'
-import { handleVote } from '../reducers/anecdoteReducer'
 import { getAnecdotes } from '../services/anecdoteService'
 
 const AnecdoteList = () => {
-  const dispatch = useDispatch()
 
   const { data: anecdotes, isLoading, isError, error } = useQuery(
     ['anecdotes'],
@@ -44,7 +42,6 @@ const AnecdoteList = () => {
           <div>{anecdote.content}</div>
           <div>
             has {anecdote.votes}
-            <button onClick={() => dispatch(handleVote(anecdote.id))}>vote</button>
           </div>
         </div>
       ))}

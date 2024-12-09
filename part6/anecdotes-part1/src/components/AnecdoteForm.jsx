@@ -1,16 +1,26 @@
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useState } from 'react'
-import { useDispatch } from 'react-redux'
-import { handleCreateAnecdote } from '../reducers/anecdoteReducer'
+import { createAnecdote } from '../reducers/anecdoteReducer'
+
 
 const AnecdoteForm = () => {
   const [content, setContent] = useState('')
-  const dispatch = useDispatch()
+  const queryClient = useQueryClient()
+
+  const mutation = useMutation(createAnecdote, {
+    onSuccess: () => {
+      queryClient.invalidateQueries(['anecdotes'])
+    }
+  })
+
 
   const handleSubmit = (event) => {
     event.preventDefault()
-    if (content) {
-      dispatch(handleCreateAnecdote(content))
+    if (content.length >= 5) {
+      mutation.mutate({ content, votes: 0 })
       setContent('')
+    } else {
+      alert('Content must be at least 5 characters long')
     }
   }
 
@@ -22,7 +32,7 @@ const AnecdoteForm = () => {
           value={content}
           onChange={(e) => setContent(e.target.value)}
         />
-        <button type="submit">Create</button>
+        <button type="submit" disabled={mutation.isLoading}>{mutation.isLoading ? 'Creating...' : 'Create'}</button>
       </form>
     </div>
   )
