@@ -22,7 +22,7 @@ const AnecdoteList = () => {
     return (
       <div>
         <h2>Error</h2>
-        <p>Unable to fetch anecdotes. The anecdote service is unavailable.</p>
+        <p>Unable to fetch anecdotes. The anecdote service is unavailable</p>
         <p>{error.message}</p>
       </div>
     )
