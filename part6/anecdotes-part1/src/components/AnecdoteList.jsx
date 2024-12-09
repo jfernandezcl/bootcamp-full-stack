@@ -1,8 +1,19 @@
 import { useSelector } from 'react-redux'
-import { useQuery } from '@tanstack/react-query'
-import { getAnecdotes } from '../services/anecdoteService'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { getAnecdotes, updateAnecdote } from '../services/anecdoteService'
 
 const AnecdoteList = () => {
+  const queryClient = useQueryClient()
+
+  const voteMutation = useMutation(updateAnecdote, {
+    onSuccess: (updatedAnecdote) => {
+      queryClient.setQueryData(['anecdotes'], (oldAnecdotes) =>
+        oldAnecdotes.map((anecdote) =>
+          anecdote.id === updatedAnecdote.id ? updatedAnecdote : anecdote
+        )
+      )
+    },
+  })
 
   const { data: anecdotes, isLoading, isError, error } = useQuery(
     ['anecdotes'],
@@ -22,7 +33,7 @@ const AnecdoteList = () => {
     return (
       <div>
         <h2>Error</h2>
-        <p>Unable to fetch anecdotes. The anecdote service is unavailable</p>
+        <p>Unable to fetch anecdotes. The anecdote service is unavailable.</p>
         <p>{error.message}</p>
       </div>
     )
@@ -34,6 +45,10 @@ const AnecdoteList = () => {
 
   const sortedAnecdotes = [...filteredAnecdotes].sort((a, b) => b.votes - a.votes)
 
+  const handleVote = (anecdote) => {
+    voteMutation.mutate({ ...anecdote, votes: anecdote.votes + 1 })
+  }
+
   return (
     <div>
       <h2>Anecdotes</h2>
@@ -42,6 +57,7 @@ const AnecdoteList = () => {
           <div>{anecdote.content}</div>
           <div>
             has {anecdote.votes}
+            <button onClick={() => handleVote(anecdote)}>vote</button>
           </div>
         </div>
       ))}
@@ -50,4 +66,3 @@ const AnecdoteList = () => {
 }
 
 export default AnecdoteList
-
