@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { BrowserRouter as Router, Routes, Route, Link, useNavigate } from 'react-router-dom'
 import PropTypes from 'prop-types';
 import Anecdote from './components/anecdote.jsx';
+import { useField } from './hooks/index.js';
 
 
 const Menu = () => {
@@ -61,10 +62,10 @@ const Footer = () => (
 )
 
 const CreateNew = (addNew) => {
-  const [content, setContent] = useState('')
-  const [author, setAuthor] = useState('')
-  const [info, setInfo] = useState('')
-  const navigate = useNavigate()
+  const content = useField('text');
+  const author = useField('text');
+  const info = useField('text');
+  const navigate = useNavigate();
 
 
   const handleSubmit = (e) => {
@@ -78,21 +79,26 @@ const CreateNew = (addNew) => {
     navigate('/')
   }
 
+  content.reset()
+  author.reset()
+  info.reset()
+  navigate('/')
+
   return (
     <div>
       <h2>create a new anecdote</h2>
       <form onSubmit={handleSubmit}>
         <div>
           content
-          <input name='content' value={content} onChange={(e) => setContent(e.target.value)} />
+          <input {...{ ...content, reset: undefined }} />
         </div>
         <div>
           author
-          <input name='author' value={author} onChange={(e) => setAuthor(e.target.value)} />
+          <input  {...{ ...author, reset: undefined }} />
         </div>
         <div>
           url for more info
-          <input name='info' value={info} onChange={(e) => setInfo(e.target.value)} />
+          <input  {...{ ...info, reset: undefined }} />
         </div>
         <button>create</button>
       </form>
