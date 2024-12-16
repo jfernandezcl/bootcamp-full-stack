@@ -10,7 +10,8 @@ module.exports = {
     'plugin:react/recommended',
     'plugin:react/jsx-runtime',
     "plugin:cypress/recommended",
-    'plugin:react-hooks/recommended'
+    'plugin:react-hooks/recommended',
+    'plugin:prettier/recommended'
   ],
   ignorePatterns: ['dist', '.eslintrc.cjs'],
   parserOptions: {
@@ -22,13 +23,13 @@ module.exports = {
       version: '18.2'
     }
   },
-  plugins: ['react-refresh'],
-  plugins: ["cypress"],
+  plugins: ['react-refresh', 'prettier'],
   rules: {
     'react-refresh/only-export-components': [
       'warn',
       { allowConstantExport: true }
     ],
-    'react/prop-types': 'off'
+    'react/prop-types': 'off',
+    'prettier/prettier': 'error'
   }
 }
