@@ -1,5 +1,5 @@
-/* eslint-disable no-unused-vars */
 import { useState, useEffect } from 'react'
+import { useDispatch } from 'react-redux'
 import PropTypes from 'prop-types'
 import Blog from './components/Blog'
 import blogService from './services/blogs'
@@ -8,11 +8,12 @@ import LoginForm from './components/LoginForm'
 import BlogForm from './components/BlogForm'
 import Notification from './components/Notification'
 import Togglable from './components/Togglable'
+import { setNotification, clearNotification } from './actions/notification'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
   const [user, setUser] = useState(null)
-  const [notification, setNotification] = useState('')
+  const dispatch = useDispatch()
 
   useEffect(() => {
     const loggedUserJSON = localStorage.getItem('loggedBlogUser')
@@ -35,41 +36,36 @@ const App = () => {
       localStorage.setItem('loggedBlogUser', JSON.stringify(loggedInUser))
       setUser(loggedInUser)
       blogService.setToken(loggedInUser.token)
-      showNotification('Login successful')
+      dispatch(setNotification('Login successful'))
     } catch (error) {
-      showNotification('Invalid username or password', true)
+      dispatch(setNotification('Invalid username or password', true))
     }
   }
 
   const handleLogout = () => {
     localStorage.removeItem('loggedBlogUser')
     setUser(null)
-    showNotification('Logged out successfully')
+    dispatch(setNotification('Logged out successfully'))
   }
 
   const createBlog = async (blog) => {
     try {
       const newBlog = await blogService.create(blog)
       setBlogs(blogs.concat(newBlog))
-      showNotification(`Blog "${newBlog.title}" added successfully`)
+      dispatch(setNotification(`Blog "${newBlog.title}" added successfully`))
     } catch (error) {
-      showNotification('Error adding blog', true)
+      dispatch(setNotification('Error adding blog', true))
     }
-  }
-
-  const showNotification = (message, isError = false) => {
-    setNotification({ message, isError })
-    setTimeout(() => setNotification(null), 5000)
   }
 
   const updatedBlog = async (id, updatedBlog) => {
     try {
       const returnedBlog = await blogService.update(id, updatedBlog)
       setBlogs(blogs.map((blog) => (blog.id === id ? returnedBlog : blog)))
-      showNotification(`Blog "${returnedBlog.title}" updated successfully`)
+      dispatch(setNotification(`Blog "${returnedBlog.title}" updated successfully`))
     } catch (error) {
       console.error('Error updating blog:', error)
-      showNotification('Error updating blog', true)
+      dispatch(setNotification('Error updating blog', true))
     }
   }
 
@@ -80,10 +76,10 @@ const App = () => {
       if (!confirm) return
       await blogService.remove(id)
       setBlogs(blogs.filter((blog) => blog.id !== id))
-      showNotification(`Blog "${blogToDelete.title}" deleted successfully`)
+      dispatch(setNotification(`Blog "${blogToDelete.title}" deleted successfully`))
     } catch (error) {
       console.error('Error deleting blog:', error)
-      showNotification('Error deleting blog', true)
+      dispatch(setNotification('Error deleting blog', true))
     }
   }
 
@@ -91,9 +87,7 @@ const App = () => {
     return (
       <div>
         <h2>Log in to application</h2>
-        {notification && (
-          <Notification message={notification.message} isError={notification.isError} />
-        )}
+        <Notification />
         <LoginForm handleLogin={handleLogin} />
       </div>
     )
@@ -102,9 +96,7 @@ const App = () => {
   return (
     <div>
       <h2>Blogs</h2>
-      {notification && (
-        <Notification message={notification.message} isError={notification.isError} />
-      )}
+      <Notification />
       <p>
         Logged in as {user.name}{' '}
         <button onClick={handleLogout}>Logout</button>
@@ -133,7 +125,6 @@ const App = () => {
 App.propTypes = {
   blogs: PropTypes.array.isRequired,
   user: PropTypes.object,
-  notification: PropTypes.object,
 }
 
 export default App
