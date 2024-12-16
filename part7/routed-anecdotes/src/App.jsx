@@ -76,13 +76,18 @@ const CreateNew = (addNew) => {
       info,
       votes: 0
     })
+    content.reset()
+    author.reset()
+    info.reset()
     navigate('/')
   }
 
-  content.reset()
-  author.reset()
-  info.reset()
-  navigate('/')
+  const handleReset = () => {
+    content.reset()
+    author.reset()
+    info.reset()
+  }
+
 
   return (
     <div>
@@ -100,7 +105,8 @@ const CreateNew = (addNew) => {
           url for more info
           <input  {...{ ...info, reset: undefined }} />
         </div>
-        <button>create</button>
+        <button type='submit'>create</button>
+        <button type='button' onClick={handleReset}>Reset</button>
       </form>
     </div>
   )
