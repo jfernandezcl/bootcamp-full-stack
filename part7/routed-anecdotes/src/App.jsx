@@ -88,7 +88,7 @@ const CreateNew = (addNew) => {
     info.reset()
   }
 
-
+  // Implemented the error that gave us the reset
   return (
     <div>
       <h2>create a new anecdote</h2>
