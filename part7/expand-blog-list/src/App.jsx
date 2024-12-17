@@ -13,6 +13,7 @@ import { setNotification } from './actions/notification'
 import { clearUser, setUser } from './reducers/user'
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom'
 import Users from './components/Users'
+import User from './components/User'
 
 const App = () => {
   const dispatch = useDispatch()
@@ -108,7 +109,7 @@ const App = () => {
 
         <Routes>
           <Route path="/users" element={<Users />} />
-
+          <Route path="/users/:userId" element={<User />} />
           <Route path="/" element={
             <div>
               <Togglable buttonLabel="Create new blog">
