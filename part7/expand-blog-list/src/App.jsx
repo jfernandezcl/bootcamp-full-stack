@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { initializeBlogs, createBlog, updateBlog, deleteBlog } from './actions/blogs'
 import PropTypes from 'prop-types'
@@ -10,20 +10,21 @@ import BlogForm from './components/BlogForm'
 import Notification from './components/Notification'
 import Togglable from './components/Togglable'
 import { setNotification } from './actions/notification'
+import { clearUser, setUser } from './reducers/user'
 
 const App = () => {
   const dispatch = useDispatch()
   const blogs = useSelector((state) => state.blogs)
-  const [user, setUser] = useState(null)
+  const user = useSelector((state) => state.user)
 
   useEffect(() => {
     const loggedUserJSON = localStorage.getItem('loggedBlogUser')
     if (loggedUserJSON) {
       const user = JSON.parse(loggedUserJSON)
-      setUser(user)
+      dispatch(setUser(user))
       blogService.setToken(user.token)
     }
-  }, [])
+  }, [dispatch])
 
   useEffect(() => {
     if (user) {
@@ -35,7 +36,7 @@ const App = () => {
     try {
       const loggedInUser = await loginService.login(credentials)
       localStorage.setItem('loggedBlogUser', JSON.stringify(loggedInUser))
-      setUser(loggedInUser)
+      dispatch(setUser(loggedInUser))
       blogService.setToken(loggedInUser.token)
       dispatch(setNotification('Login successful'))
     } catch (error) {
@@ -45,7 +46,7 @@ const App = () => {
 
   const handleLogout = () => {
     localStorage.removeItem('loggedBlogUser')
-    setUser(null)
+    dispatch(clearUser())
     dispatch(setNotification('Logged out successfully'))
   }
 
