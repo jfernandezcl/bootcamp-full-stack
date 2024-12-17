@@ -2,7 +2,6 @@ import { useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { initializeBlogs, createBlog, updateBlog, deleteBlog } from './actions/blogs'
 import PropTypes from 'prop-types'
-import Blog from './components/Blog'
 import blogService from './services/blogs'
 import loginService from './services/login'
 import LoginForm from './components/LoginForm'
@@ -15,6 +14,7 @@ import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom'
 import Users from './components/Users'
 import User from './components/User'
 import Blog from "./Blog"
+import BlogView from './components/BlogView'
 
 const App = () => {
   const dispatch = useDispatch()

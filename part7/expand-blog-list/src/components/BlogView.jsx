@@ -1,3 +1,4 @@
+// components/BlogView.jsx
 import { useState, useEffect } from 'react'
 import blogService from '../services/blogs'
 import commentService from '../services/comments'
@@ -6,12 +7,19 @@ const BlogView = ({ blogId }) => {
   const [blog, setBlog] = useState(null)
   const [comments, setComments] = useState([])
   const [newComment, setNewComment] = useState('')
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     const fetchBlog = async () => {
-      const fetchedBlog = await blogService.getBlog(blogId)
-      setBlog(fetchedBlog)
-      setComments(fetchedBlog.comments) // Asumiendo que el backend te pasa los comentarios al obtener el blog
+      try {
+        const fetchedBlog = await blogService.getBlog(blogId)
+        setBlog(fetchedBlog)
+        setComments(fetchedBlog.comments)
+      } catch (error) {
+        console.error('Error fetching blog:', error)
+      } finally {
+        setLoading(false)
+      }
     }
     fetchBlog()
   }, [blogId])
@@ -22,11 +30,15 @@ const BlogView = ({ blogId }) => {
 
     try {
       const comment = await commentService.addComment(blogId, { content: newComment })
-      setComments(comments.concat(comment))
+      setComments((prevComments) => [...prevComments, comment]) // Agregar el nuevo comentario al estado
       setNewComment('')
     } catch (error) {
       console.error('Error adding comment:', error)
     }
+  }
+
+  if (loading) {
+    return <p>Loading...</p>
   }
 
   return (
@@ -52,7 +64,7 @@ const BlogView = ({ blogId }) => {
           </form>
         </div>
       ) : (
-        <p>Loading...</p>
+        <p>Blog not found</p>
       )}
     </div>
   )
