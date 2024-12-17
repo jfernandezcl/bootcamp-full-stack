@@ -14,6 +14,7 @@ import { clearUser, setUser } from './reducers/user'
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom'
 import Users from './components/Users'
 import User from './components/User'
+import Blog from "./Blog"
 
 const App = () => {
   const dispatch = useDispatch()
@@ -120,17 +121,14 @@ const App = () => {
                   .slice()
                   .sort((a, b) => b.likes - a.likes)
                   .map((blog) => (
-                    <Blog
-                      key={blog.id}
-                      blog={blog}
-                      updateBlog={modifyBlog}
-                      deleteBlog={removeBlog}
-                      currentUser={user}
-                    />
+                    <div key={blog.id}>
+                      <Link to={`/blogs/${blog.id}`}>{blog.title}</Link>
+                    </div>
                   ))}
               </div>
             </div>
           } />
+          <Route path="/blogs/:blogId" element={<BlogView />} />
         </Routes>
       </div>
     </Router>
