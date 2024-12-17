@@ -11,6 +11,8 @@ import Notification from './components/Notification'
 import Togglable from './components/Togglable'
 import { setNotification } from './actions/notification'
 import { clearUser, setUser } from './reducers/user'
+import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom'
+import Users from './components/Users'
 
 const App = () => {
   const dispatch = useDispatch()
@@ -90,33 +92,47 @@ const App = () => {
     )
   }
 
-
   return (
-    <div>
-      <h2>Blogs</h2>
-      <Notification />
-      <p>
-        Logged in as {user.name}{' '}
-        <button onClick={handleLogout}>Logout</button>
-      </p>
-      <Togglable buttonLabel="Create new blog">
-        <BlogForm createBlog={addBlog} />
-      </Togglable>
+    <Router>
       <div>
-        {blogs
-          .slice()
-          .sort((a, b) => b.likes - a.likes)
-          .map((blog) => (
-            <Blog
-              key={blog.id}
-              blog={blog}
-              updateBlog={modifyBlog}
-              deleteBlog={removeBlog}
-              currentUser={user}
-            />
-          ))}
+        <h2>Blogs</h2>
+        <Notification />
+        <p>
+          Logged in as {user.name}{' '}
+          <button onClick={handleLogout}>Logout</button>
+        </p>
+
+        <nav>
+          <Link to="/users">Users</Link>
+        </nav>
+
+        <Routes>
+          <Route path="/users" element={<Users />} />
+
+          <Route path="/" element={
+            <div>
+              <Togglable buttonLabel="Create new blog">
+                <BlogForm createBlog={addBlog} />
+              </Togglable>
+              <div>
+                {blogs
+                  .slice()
+                  .sort((a, b) => b.likes - a.likes)
+                  .map((blog) => (
+                    <Blog
+                      key={blog.id}
+                      blog={blog}
+                      updateBlog={modifyBlog}
+                      deleteBlog={removeBlog}
+                      currentUser={user}
+                    />
+                  ))}
+              </div>
+            </div>
+          } />
+        </Routes>
       </div>
-    </div>
+    </Router>
   )
 }
 
@@ -126,3 +142,4 @@ App.propTypes = {
 }
 
 export default App
+
