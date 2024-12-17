@@ -20,6 +20,16 @@ export const createBlog = (newBlog) => {
   }
 }
 
+export const likeBlog = (id, updateBlog) => {
+  return async (dispatch) => {
+    const returnedBlog = await blogService.update(id, updateBlog)
+    dispatch({
+      type: 'LIKE_BLOG',
+      data: returnedBlog
+    })
+  }
+}
+
 export const updateBlog = (id, updatedBlog) => {
   return async (dispatch) => {
     const blog = await blogService.update(id, updatedBlog)

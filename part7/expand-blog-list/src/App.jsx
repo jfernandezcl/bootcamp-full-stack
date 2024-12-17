@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { initializeBlogs, createBlog, updateBlog, deleteBlog } from './actions/blogs'
 import PropTypes from 'prop-types'
@@ -89,6 +89,7 @@ const App = () => {
     )
   }
 
+
   return (
     <div>
       <h2>Blogs</h2>
@@ -108,7 +109,7 @@ const App = () => {
             <Blog
               key={blog.id}
               blog={blog}
-              updateBlog={(updatedData) => modifyBlog(blog.id, updatedData)}
+              updateBlog={modifyBlog}
               deleteBlog={removeBlog}
               currentUser={user}
             />
@@ -119,7 +120,7 @@ const App = () => {
 }
 
 App.propTypes = {
-  blogs: PropTypes.array,
+  blogs: PropTypes.array.isRequired,
   user: PropTypes.object,
 }
 
