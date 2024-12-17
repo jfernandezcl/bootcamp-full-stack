@@ -44,24 +44,26 @@ const BlogView = ({ blogId }) => {
   return (
     <div>
       {blog ? (
-        <div>
+        <div className="blog-details">
           <h2>{blog.title}</h2>
           <p>{blog.author}</p>
           <p>{blog.url}</p>
           <h3>Comments</h3>
-          <ul>
-            {comments.map((comment) => (
-              <li key={comment.id}>{comment.content}</li>
-            ))}
-          </ul>
-          <form onSubmit={handleCommentSubmit}>
-            <textarea
-              value={newComment}
-              onChange={(e) => setNewComment(e.target.value)}
-              placeholder="Add a comment..."
-            ></textarea>
-            <button type="submit">Add Comment</button>
-          </form>
+          <div className="comments-section">
+            <ul>
+              {comments.map((comment) => (
+                <li key={comment.id}>{comment.content}</li>
+              ))}
+            </ul>
+            <form onSubmit={handleCommentSubmit}>
+              <textarea
+                value={newComment}
+                onChange={(e) => setNewComment(e.target.value)}
+                placeholder="Add a comment..."
+              ></textarea>
+              <button type="submit">Add Comment</button>
+            </form>
+          </div>
         </div>
       ) : (
         <p>Blog not found</p>

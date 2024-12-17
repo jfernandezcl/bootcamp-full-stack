@@ -15,6 +15,7 @@ import Users from './components/Users'
 import User from './components/User'
 import Blog from "./Blog"
 import BlogView from './components/BlogView'
+import './App.css'
 
 const App = () => {
   const dispatch = useDispatch()
@@ -105,19 +106,19 @@ const App = () => {
         </p>
 
         <nav>
-          <ul>
-            <li>
-              <Link to="/">Home</Link>
+          <ul className="nav-list">
+            <li className="nav-item">
+              <Link to="/" className="nav-link">Home</Link>
             </li>
-            <li>
-              <Link to="/users">Users</Link>
+            <li className="nav-item">
+              <Link to="/users" className="nav-link">Users</Link>
             </li>
-            <li>
-              <Link to="/blogs">Blogs</Link>
+            <li className="nav-item">
+              <Link to="/blogs" className="nav-link">Blogs</Link>
             </li>
             {user && (
-              <li>
-                <button onClick={handleLogout}>Logout</button>
+              <li className="nav-item">
+                <button className="button" onClick={handleLogout}>Logout</button>
               </li>
             )}
           </ul>
@@ -156,4 +157,5 @@ App.propTypes = {
 }
 
 export default App
+
 
