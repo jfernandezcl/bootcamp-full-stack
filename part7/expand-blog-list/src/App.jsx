@@ -1,5 +1,6 @@
-import { useState, useEffect } from 'react'
-import { useDispatch } from 'react-redux'
+import { useEffect } from 'react'
+import { useSelector, useDispatch } from 'react-redux'
+import { initializeBlogs, createBlog, updateBlog, deleteBlog } from './actions/blogs'
 import PropTypes from 'prop-types'
 import Blog from './components/Blog'
 import blogService from './services/blogs'
@@ -8,12 +9,12 @@ import LoginForm from './components/LoginForm'
 import BlogForm from './components/BlogForm'
 import Notification from './components/Notification'
 import Togglable from './components/Togglable'
-import { setNotification, clearNotification } from './actions/notification'
+import { setNotification } from './actions/notification'
 
 const App = () => {
-  const [blogs, setBlogs] = useState([])
-  const [user, setUser] = useState(null)
   const dispatch = useDispatch()
+  const blogs = useSelector((state) => state.blogs)
+  const [user, setUser] = useState(null)
 
   useEffect(() => {
     const loggedUserJSON = localStorage.getItem('loggedBlogUser')
@@ -26,9 +27,9 @@ const App = () => {
 
   useEffect(() => {
     if (user) {
-      blogService.getAll().then((blogs) => setBlogs(blogs))
+      dispatch(initializeBlogs())
     }
-  }, [user])
+  }, [dispatch, user])
 
   const handleLogin = async (credentials) => {
     try {
@@ -48,37 +49,32 @@ const App = () => {
     dispatch(setNotification('Logged out successfully'))
   }
 
-  const createBlog = async (blog) => {
+  const addBlog = async (blog) => {
     try {
-      const newBlog = await blogService.create(blog)
-      setBlogs(blogs.concat(newBlog))
-      dispatch(setNotification(`Blog "${newBlog.title}" added successfully`))
+      dispatch(createBlog(blog))
+      dispatch(setNotification(`Blog "${blog.title}" added successfully`))
     } catch (error) {
       dispatch(setNotification('Error adding blog', true))
     }
   }
 
-  const updatedBlog = async (id, updatedBlog) => {
+  const modifyBlog = async (id, updatedData) => {
     try {
-      const returnedBlog = await blogService.update(id, updatedBlog)
-      setBlogs(blogs.map((blog) => (blog.id === id ? returnedBlog : blog)))
-      dispatch(setNotification(`Blog "${returnedBlog.title}" updated successfully`))
+      dispatch(updateBlog(id, updatedData))
+      dispatch(setNotification('Blog updated successfully'))
     } catch (error) {
-      console.error('Error updating blog:', error)
       dispatch(setNotification('Error updating blog', true))
     }
   }
 
-  const deleteBlog = async (id) => {
+  const removeBlog = async (id) => {
+    const blogToDelete = blogs.find((b) => b.id === id)
+    if (!window.confirm(`Do you really want to delete "${blogToDelete.title}"?`)) return
+
     try {
-      const blogToDelete = blogs.find((b) => b.id === id)
-      const confirm = window.confirm(`Do you really want to delete "${blogToDelete.title}"?`)
-      if (!confirm) return
-      await blogService.remove(id)
-      setBlogs(blogs.filter((blog) => blog.id !== id))
+      dispatch(deleteBlog(id))
       dispatch(setNotification(`Blog "${blogToDelete.title}" deleted successfully`))
     } catch (error) {
-      console.error('Error deleting blog:', error)
       dispatch(setNotification('Error deleting blog', true))
     }
   }
@@ -102,7 +98,7 @@ const App = () => {
         <button onClick={handleLogout}>Logout</button>
       </p>
       <Togglable buttonLabel="Create new blog">
-        <BlogForm createBlog={createBlog} />
+        <BlogForm createBlog={addBlog} />
       </Togglable>
       <div>
         {blogs
@@ -112,8 +108,8 @@ const App = () => {
             <Blog
               key={blog.id}
               blog={blog}
-              updateBlog={(updatedBlog) => updatedBlog(blog.id, updatedBlog)}
-              deleteBlog={deleteBlog}
+              updateBlog={(updatedData) => modifyBlog(blog.id, updatedData)}
+              deleteBlog={removeBlog}
               currentUser={user}
             />
           ))}
@@ -123,7 +119,7 @@ const App = () => {
 }
 
 App.propTypes = {
-  blogs: PropTypes.array.isRequired,
+  blogs: PropTypes.array,
   user: PropTypes.object,
 }
 
