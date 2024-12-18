@@ -111,6 +111,31 @@ const resolvers = {
         filteredBooks = filteredBooks.filter(book => book.genres.includes(genre))
       }
       return filteredBooks
+    },
+    allAuthors: () => {
+      return authors.map(author => ({
+        ...author,
+        bookCount: books.filter(book => book.author === author.name).length
+      }))
+    }
+  },
+
+  Mutation: {
+    addBok: (_, { title, author, published, genres }) => {
+      let authorExist = author.find(a => a.name === author)
+      if (!authorExist) {
+        authorExist = { name: author, born: null, id: `${Date.now()}` }
+        authors.push(authorExist)
+      }
+      const newBook = {
+        title,
+        author,
+        published,
+        genres,
+        id: `${Date.now()}`,
+      }
+      books.push(newBook)
+      return newBook
     }
   }
 }
