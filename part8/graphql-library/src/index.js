@@ -99,12 +99,18 @@ const typeDefs = `
 
 const resolvers = {
   Query: {
-    allAuthor: (_, { author }) => {
+    allAuthor: (_, { author, genre }) => {
+      let filteredBooks = books
+
       if (author) {
 
-        return books.filter(book => book.author === author)
+        filteredBooks = filteredBooks.filter(book => book.author === author)
       }
-      return books
+
+      if (genre) {
+        filteredBooks = filteredBooks.filter(book => book.genres.includes(genre))
+      }
+      return filteredBooks
     }
   }
 }
