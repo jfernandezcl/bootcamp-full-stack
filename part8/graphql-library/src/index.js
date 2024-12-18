@@ -136,6 +136,16 @@ const resolvers = {
       }
       books.push(newBook)
       return newBook
+    },
+    editAuthor: (_, { name, setBornTo }) => {
+      const author = authors.find(a => a.name === name)
+
+      if (!author) {
+        return null
+      }
+
+      author.born = setBornTo
+      return author
     }
   }
 }
