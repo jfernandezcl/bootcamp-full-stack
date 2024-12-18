@@ -99,10 +99,13 @@ const typeDefs = `
 
 const resolvers = {
   Query: {
-    allAuthor: () => authors.map(author => ({
-      name: author.name,
-      bookCount: books.filter(book => book.author === author.name).length
-    }))
+    allAuthor: (_, { author }) => {
+      if (author) {
+
+        return books.filter(book => book.author === author)
+      }
+      return books
+    }
   }
 }
 
