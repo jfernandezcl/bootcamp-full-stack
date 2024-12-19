@@ -4,29 +4,23 @@ const NewBook = (show) => {
   const [title, setTitle] = useState('')
   const [author, setAuthor] = useState('')
   const [published, setPublished] = useState('')
-  const [genre, setGenre] = useState('')
-  const [genres, setGenres] = useState([])
 
-  if (show) {
+  if (!show) {
     return null
   }
 
   const submit = async (event) => {
     event.preventDefault()
+    const newBook = { title, author, published: Number(published) }
+    addBook(newBook)
 
     console.log('add book...')
 
     setTitle('')
     setPublished('')
     setAuthor('')
-    setGenres([])
-    setGenre('')
   }
 
-  const addGenre = () => {
-    setGenres(genres.concat(genre))
-    setGenre('')
-  }
 
   return (
     <div>
@@ -58,11 +52,7 @@ const NewBook = (show) => {
             value={genre}
             onChange={({ target }) => setGenre(target.value)}
           />
-          <button onClick={addGenre} type="button">
-            add genre
-          </button>
         </div>
-        <div>genres: {genres.join(' ')}</div>
         <button type="submit">create book</button>
       </form>
     </div>
