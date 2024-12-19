@@ -6,14 +6,17 @@ import NewBook from "./components/NewBook";
 const App = () => {
   const [page, setPage] = useState("authors");
 
-  const [books, setBooks] = useState([
-    { title: "Harry Potter and the Sorcerer's Stone", author: "J.K. Rowling", published: 1997 },
-    { title: "A Game of Thrones", author: "George R.R. Martin", published: 1996 },
-    { title: "The Hobbit", author: "J.R.R. Tolkien", published: 1937 },
-  ])
+  const [authors, setAuthors] = useState([
+    { name: "Author 1", born: 1960, bookCount: 3 },
+    { name: "Author 2", born: null, bookCount: 5 },
+  ]);
 
-  const addBook = (newBook) => {
-    setBooks([...books, setBooks])
+  const updateBirthYear = (name, year) => {
+    setAuthors((prevAuthors) =>
+      prevAuthors.map((a) =>
+        a.name === name ? { ...a, born: Number(year) } : a
+      )
+    )
   }
 
   return (
@@ -24,11 +27,11 @@ const App = () => {
         <button onClick={() => setPage("add")}>add book</button>
       </div>
 
-      <Authors show={page === "authors"} books={books} />
+      <Authors show={page === "authors"} authors={authors} updateBirthYear={updateBirthYear} />
 
-      <Books show={page === "books"} books={books} />
+      <Books show={page === "books"} />
 
-      <NewBook show={page === "add"} books={addBook} />
+      <NewBook show={page === "add"} />
     </div>
   );
 };
