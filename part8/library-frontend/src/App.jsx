@@ -9,7 +9,9 @@ const App = () => {
   const [authors, setAuthors] = useState([
     { name: "Author 1", born: 1960, bookCount: 3 },
     { name: "Author 2", born: null, bookCount: 5 },
+    { name: "Author 3", born: 1985, bookCount: 2 },
   ]);
+  const [books, setBooks] = useState([]);
 
   const updateBirthYear = (name, year) => {
     setAuthors((prevAuthors) =>
@@ -19,6 +21,10 @@ const App = () => {
     )
   }
 
+  const addBook = (newBook) => {
+    setBooks([...books, newBook]);
+  };
+
   return (
     <div>
       <div>
@@ -27,11 +33,15 @@ const App = () => {
         <button onClick={() => setPage("add")}>add book</button>
       </div>
 
-      <Authors show={page === "authors"} authors={authors} updateBirthYear={updateBirthYear} />
+      <Authors
+        show={page === "authors"}
+        authors={authors}
+        updateBirthYear={updateBirthYear}
+      />
 
-      <Books show={page === "books"} />
+      <Books show={page === "books"} books={books} />
 
-      <NewBook show={page === "add"} />
+      <NewBook show={page === "add"} addBook={addBook} />
     </div>
   );
 };

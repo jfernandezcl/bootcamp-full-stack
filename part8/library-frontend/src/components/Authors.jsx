@@ -5,13 +5,18 @@ const Authors = ({ show, authors, updateBirthYear }) => {
     return null;
   }
 
-  // Nuevos estados locales
-  const [selectedAuthor, setSelectedAuthor] = useState("");
+
+  const [selectedAuthor, setSelectedAuthor] = useState(null);
   const [birthYear, setBirthYear] = useState("");
+
+  const options = authors.map((a) => ({
+    value: a.name,
+    label: a.name,
+  }));
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    updateBirthYear(selectedAuthor, birthYear); // Función que actualiza el año de nacimiento
+    updateBirthYear(selectedAuthor, birthYear);
     setSelectedAuthor("");
     setBirthYear("");
   };
@@ -39,20 +44,13 @@ const Authors = ({ show, authors, updateBirthYear }) => {
       <h3>Set Birth Year</h3>
       <form onSubmit={handleSubmit}>
         <div>
-          <label>
-            Author:
-            <select
-              value={selectedAuthor}
-              onChange={({ target }) => setSelectedAuthor(target.value)}
-            >
-              <option value="">Select author</option>
-              {authors.map((a) => (
-                <option key={a.name} value={a.name}>
-                  {a.name}
-                </option>
-              ))}
-            </select>
-          </label>
+          <label>Author:</label>
+          <Select
+            options={options}
+            value={selectedAuthor}
+            onChange={setSelectedAuthor}
+            placeholder="Select an author"
+          />
         </div>
         <div>
           <label>
