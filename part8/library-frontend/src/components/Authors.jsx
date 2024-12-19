@@ -1,8 +1,12 @@
 const Authors = (show) => {
-  if (show) {
+  if (!show) {
     return null
   }
-  const authors = []
+  const authors = [
+    { name: "J.K. Rowling", born: 1965, bookCount: 7 },
+    { name: "George R.R. Martin", born: 1948, bookCount: 5 },
+    { name: "J.R.R. Tolkien", born: 1892, bookCount: 4 },
+  ]
 
   return (
     <div>
