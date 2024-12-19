@@ -3,7 +3,11 @@ const Book = require("./models/book");
 
 const resolvers = {
   Query: {
-    allBooks: async () => {
+    // Consulta de todos los libros con filtro por género
+    allBooks: async (_, { genre }) => {
+      if (genre) {
+        return await Book.find({ genres: genre }).populate("author", { name: 1, born: 1 });
+      }
       return await Book.find({}).populate("author", { name: 1, born: 1 });
     },
     allAuthors: async () => {
@@ -11,6 +15,7 @@ const resolvers = {
     }
   },
   Mutation: {
+    // Agregar un libro
     addBook: async (_, { title, author, published, genres }) => {
       // Buscar el autor por nombre
       const authorObj = await Author.findOne({ name: author });
@@ -31,6 +36,7 @@ const resolvers = {
 
       return newBook;
     },
+    // Editar el año de nacimiento de un autor
     editAuthor: async (_, { name, setBornTo }) => {
       const author = await Author.findOne({ name });
 

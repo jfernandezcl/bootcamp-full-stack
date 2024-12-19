@@ -16,10 +16,11 @@ const bookSchema = new mongoose.Schema({
   }],
   author: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "Author",
+    ref: "Author", // Referencia al modelo Author
     required: true
   }
 });
 
 module.exports = mongoose.model("Book", bookSchema);
+
 

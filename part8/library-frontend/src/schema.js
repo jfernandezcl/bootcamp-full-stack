@@ -16,7 +16,7 @@ const typeDefs = gql`
   }
 
   type Query {
-    allBooks: [Book!]!
+    allBooks(genre: String): [Book!]!
     allAuthors: [Author!]!
   }
 
