@@ -6,7 +6,7 @@ const resolvers = require("./resolvers");
 
 const app = express();
 
-// Conectar con MongoDB
+
 mongoose.connect("mongodb://localhost/library", {
   useNewUrlParser: true,
   useUnifiedTopology: true,
@@ -18,15 +18,20 @@ mongoose.connect("mongodb://localhost/library", {
     console.error("Error connecting to MongoDB:", error.message);
   });
 
-// Configurar Apollo Server
+
 const server = new ApolloServer({
   typeDefs,
   resolvers,
+  context: ({ req }) => {
+    const authorization = req.headers.authorization || "";
+    return { authorization };
+  },
 });
 
-// Aplicar middleware de Apollo Server en Express
+
 server.applyMiddleware({ app });
 
 app.listen({ port: 4000 }, () =>
   console.log(`Server ready at http://localhost:4000${server.graphqlPath}`)
 );
+

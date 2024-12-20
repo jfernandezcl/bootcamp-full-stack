@@ -1,6 +1,17 @@
 const { gql } = require("apollo-server-express");
 
 const typeDefs = gql`
+   type User {
+    username: String!
+    favoriteGenre: String!
+    id: ID!
+  }
+
+  type Token {
+    value: String!
+  }
+
+
   type Author {
     name: String!
     born: Int
@@ -16,6 +27,7 @@ const typeDefs = gql`
   }
 
   type Query {
+    me: User
     allBooks(genre: String): [Book!]!
     allAuthors: [Author!]!
   }
@@ -27,6 +39,16 @@ const typeDefs = gql`
       published: Int!
       genres: [String!]!
     ): Book!
+
+     createUser(
+    username: String!
+    favoriteGenre: String!
+  ): User
+  
+  login(
+    username: String!
+    password: String!
+  ): Token
     
     editAuthor(
       name: String!
