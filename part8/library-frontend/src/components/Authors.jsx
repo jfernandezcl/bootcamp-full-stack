@@ -1,15 +1,35 @@
 import { useState } from "react";
+import { useQuery, gql } from "@apollo/client";
+import Select from "react-select";
 
-const Authors = ({ show, authors, updateBirthYear }) => {
+const ALL_AUTHORS_QUERY = gql`
+  query {
+    allAuthors {
+      name
+      born
+      bookCount
+      books {
+        title
+        published
+      }
+    }
+  }
+`;
+
+const Authors = ({ show, updateBirthYear }) => {
   if (!show) {
     return null;
   }
 
+  const { loading, error, data } = useQuery(ALL_AUTHORS_QUERY);
+
+  if (loading) return <p>Loading...</p>;
+  if (error) return <p>Error: {error.message}</p>;
 
   const [selectedAuthor, setSelectedAuthor] = useState(null);
   const [birthYear, setBirthYear] = useState("");
 
-  const options = authors.map((a) => ({
+  const options = data.allAuthors.map((a) => ({
     value: a.name,
     label: a.name,
   }));
@@ -31,11 +51,19 @@ const Authors = ({ show, authors, updateBirthYear }) => {
             <th>Born</th>
             <th>Books</th>
           </tr>
-          {authors.map((a) => (
+          {data.allAuthors.map((a) => (
             <tr key={a.name}>
               <td>{a.name}</td>
               <td>{a.born || "N/A"}</td>
-              <td>{a.bookCount}</td>
+              <td>
+                <ul>
+                  {a.books.map((book) => (
+                    <li key={book.title}>
+                      {book.title} ({book.published})
+                    </li>
+                  ))}
+                </ul>
+              </td>
             </tr>
           ))}
         </tbody>
