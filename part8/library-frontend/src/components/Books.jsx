@@ -39,6 +39,11 @@ const Books = ({ show, setGenre, favoriteGenre, favoriteBooks }) => {
       console.error("Error adding book:", err.message);
     }
   };
+  useEffect(() => {
+    if (data && data.bookAdded) {
+      window.alert(`¡Nuevo libro agregado: ${data.bookAdded.title}!`);
+    }
+  }, [data]);
 
   if (!show) return null;
   if (loading) return <div>Loading...</div>;
