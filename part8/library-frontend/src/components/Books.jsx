@@ -1,54 +1,53 @@
-import React from "react";
-import { useQuery, gql } from "@apollo/client"
-
-const ALL_BOOKS = gql`
-  query {
-    allBooks {
-      title
-      published
-      author {
-        name
-      }
-      genres
-    }
-  }
-`;
-
-const Books = ({ show, books }) => {
-  const { loading, error, data } = useQuery(ALL_BOOKS);
-
+const Books = ({ show, books, favoriteBooks, favoriteGenre }) => {
   if (!show) {
-    return null
+    return null;
   }
-
-  if (loading) return <p>Loading books...</p>;
-  if (error) return <p>Error: {error.message}</p>;
-
 
   return (
     <div>
       <h2>books</h2>
 
+      {favoriteGenre && (
+        <div>
+          <h3>Books in your favorite genre: {favoriteGenre}</h3>
+          <table>
+            <tbody>
+              <tr>
+                <th>title</th>
+                <th>author</th>
+                <th>published</th>
+              </tr>
+              {favoriteBooks.map((book) => (
+                <tr key={book.title}>
+                  <td>{book.title}</td>
+                  <td>{book.author}</td>
+                  <td>{book.published}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+
+      <h3>All books</h3>
       <table>
         <tbody>
           <tr>
             <th>title</th>
             <th>author</th>
             <th>published</th>
-            <th>genres</th>
           </tr>
-          {data.allBooks.map((book) => (
+          {books.map((book) => (
             <tr key={book.title}>
               <td>{book.title}</td>
-              <td>{book.author.name}</td>
+              <td>{book.author}</td>
               <td>{book.published}</td>
-              <td>{book.genres.join(", ")}</td>
             </tr>
           ))}
         </tbody>
       </table>
     </div>
-  )
-}
+  );
+};
 
-export default Books
+export default Books;

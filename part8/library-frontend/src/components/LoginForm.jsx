@@ -9,6 +9,7 @@ const LoginForm = ({ setAuthenticated }) => {
 
     if (username && password) {
       setAuthenticated(true);
+      setFavoriteGenre("Fiction");
     } else {
       alert("Please enter both username and password");
     }

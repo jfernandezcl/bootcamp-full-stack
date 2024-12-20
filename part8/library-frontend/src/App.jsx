@@ -12,6 +12,8 @@ const client = new ApolloClient({
 const App = () => {
   const [page, setPage] = useState("authors");
   const [authenticated, setAuthenticated] = useState(false);
+  const [selectedGenre, setSelectedGenre] = useState("")
+  const [favoriteGenre, setFavoriteGenre] = useState("");
 
   const [authors, setAuthors] = useState([
     { name: "Author 1", born: 1960, bookCount: 3 },
@@ -25,7 +27,6 @@ const App = () => {
     { title: "Book 3", author: "Author 1", published: 2018, genres: ["Fiction", "Drama"] },
     { title: "Book 4", author: "Author 3", published: 2021, genres: ["Sci-fi"] },
   ]);
-  const [selectedGenre, setSelectedGenre] = useState("")
 
 
   const updateBirthYear = (name, year) => {
@@ -39,6 +40,14 @@ const App = () => {
   const addBook = (newBook) => {
     setBooks([...books, newBook]);
   };
+
+  const filteredBooks = selectedGenre
+    ? books.filter((book) => book.genres.includes(selectedGenre))
+    : books;
+
+  const favoriteBooks = favoriteGenre
+    ? books.filter((book) => book.genres.includes(favoriteGenre))
+    : [];
 
   return (
     <div>
@@ -54,7 +63,6 @@ const App = () => {
       </div>
 
       <div>
-        {/* Selector de género */}
         <select onChange={(e) => setSelectedGenre(e.target.value)} value={selectedGenre}>
           <option value="">All Genres</option>
           <option value="Fiction">Fiction</option>
@@ -72,11 +80,22 @@ const App = () => {
             updateBirthYear={updateBirthYear}
           />
 
-          <Books show={page === "books"} books={filteredBooks} />
+          <Books
+            show={page === "books"}
+            books={filteredBooks}
+            favoriteBooks={favoriteBooks}
+            favoriteGenre={favoriteGenre}
+          />
+
           <NewBook show={page === "add"} addBook={addBook} />
         </>
       ) : (
-        page === "login" && <LoginForm setAuthenticated={setAuthenticated} />
+        page === "login" && (
+          <LoginForm
+            setAuthenticated={setAuthenticated}
+            setFavoriteGenre={setFavoriteGenre}
+          />
+        )
       )}
     </div>
   );
