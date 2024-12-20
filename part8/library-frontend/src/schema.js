@@ -11,7 +11,6 @@ const typeDefs = gql`
     value: String!
   }
 
-
   type Author {
     name: String!
     born: Int
@@ -41,16 +40,16 @@ const typeDefs = gql`
       genres: [String!]!
     ): Book!
 
-     createUser(
-    username: String!
-    favoriteGenre: String!
-  ): User
-  
-  login(
-    username: String!
-    password: String!
-  ): Token
-    
+    createUser(
+      username: String!
+      favoriteGenre: String!
+    ): User
+
+    login(
+      username: String!
+      password: String!
+    ): Token
+
     editAuthor(
       name: String!
       setBornTo: Int!

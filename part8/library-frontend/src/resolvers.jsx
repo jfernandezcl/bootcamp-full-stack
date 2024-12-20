@@ -6,7 +6,6 @@ const User = require("./models/user");
 
 const SECRET_KEY = "your_secret_key";
 
-
 const authenticateUser = (context) => {
   const auth = context.authorization || "";
 
@@ -134,4 +133,3 @@ const resolvers = {
 };
 
 module.exports = resolvers;
-
