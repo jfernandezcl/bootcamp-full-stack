@@ -18,7 +18,15 @@ const App = () => {
     { name: "Author 2", born: null, bookCount: 5 },
     { name: "Author 3", born: 1985, bookCount: 2 },
   ]);
-  const [books, setBooks] = useState([]);
+
+  const [books, setBooks] = useState([
+    { title: "Book 1", author: "Author 1", published: 2020, genres: ["Fiction"] },
+    { title: "Book 2", author: "Author 2", published: 2019, genres: ["Non-fiction"] },
+    { title: "Book 3", author: "Author 1", published: 2018, genres: ["Fiction", "Drama"] },
+    { title: "Book 4", author: "Author 3", published: 2021, genres: ["Sci-fi"] },
+  ]);
+  const [selectedGenre, setSelectedGenre] = useState("")
+
 
   const updateBirthYear = (name, year) => {
     setAuthors((prevAuthors) =>
@@ -45,6 +53,17 @@ const App = () => {
         )}
       </div>
 
+      <div>
+        {/* Selector de género */}
+        <select onChange={(e) => setSelectedGenre(e.target.value)} value={selectedGenre}>
+          <option value="">All Genres</option>
+          <option value="Fiction">Fiction</option>
+          <option value="Non-fiction">Non-fiction</option>
+          <option value="Drama">Drama</option>
+          <option value="Sci-fi">Sci-fi</option>
+        </select>
+      </div>
+
       {authenticated ? (
         <>
           <Authors
@@ -53,8 +72,7 @@ const App = () => {
             updateBirthYear={updateBirthYear}
           />
 
-          <Books show={page === "books"} books={books} />
-
+          <Books show={page === "books"} books={filteredBooks} />
           <NewBook show={page === "add"} addBook={addBook} />
         </>
       ) : (
