@@ -41,7 +41,7 @@ const Books = ({ show, setGenre, favoriteGenre, favoriteBooks }) => {
   };
   useEffect(() => {
     if (data && data.bookAdded) {
-      window.alert(`¡Nuevo libro agregado: ${data.bookAdded.title}!`);
+      setBooks((prevBooks) => [...prevBooks, data.bookAdded]);
     }
   }, [data]);
 
