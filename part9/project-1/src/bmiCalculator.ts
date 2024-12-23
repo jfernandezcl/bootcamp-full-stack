@@ -1,19 +1,12 @@
-function calculateBmi(height: number, weight: number): string {
-  const heightInMeters = height / 100;
-  const bmi = weight / (heightInMeters * heightInMeters);
+export const calculateBmi = (height: number, weight: number): string => {
+  const bmi = weight / Math.pow(height / 100, 2);
 
-  if (bmi < 18.5) {
-    return "Underweight";
-  } else if (bmi >= 18.5 && bmi < 25) {
-    return "Normal (healthy weight)";
-  } else if (bmi >= 25 && bmi < 30) {
-    return "Overweight";
-  } else {
-    return "Obese";
-  }
+  if (bmi < 18.5) return 'Underweight';
+  if (bmi >= 18.5 && bmi <= 24.9) return 'Normal (healthy weight)';
+  if (bmi >= 25 && bmi <= 29.9) return 'Overweight';
+  return 'Obese';
 }
 
-// Manejo de argumentos de línea de comandos
 try {
   const args = process.argv.slice(2);
   if (args.length !== 2) throw new Error("Please provide height and weight as two arguments.");
