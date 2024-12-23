@@ -40,4 +40,23 @@ function calculateExercises(hours: number[], target: number): ExerciseResult {
   };
 }
 
-console.log(calculateExercises([3, 0, 2, 4.5, 0, 3, 1], 2))
+// Manejo de argumentos de línea de comandos
+try {
+  const args = process.argv.slice(2);
+  if (args.length < 2) throw new Error("Please provide the target and daily hours as arguments.");
+
+  const target = Number(args[0]);
+  const hours = args.slice(1).map((hour) => Number(hour));
+
+  if (isNaN(target) || hours.some((hour) => isNaN(hour))) {
+    throw new Error("All arguments must be numbers.");
+  }
+
+  console.log(calculateExercises(hours, target));
+} catch (error: unknown) {
+  if (error instanceof Error) {
+    console.error("Error:", error.message);
+  } else {
+    console.error("Unknown error occurred.");
+  }
+}
