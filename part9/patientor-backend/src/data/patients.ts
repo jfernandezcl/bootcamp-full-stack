@@ -1,4 +1,6 @@
-const patients = [
+import { Patient } from '../types/types';
+
+const patients: Patient[] = [
   {
     id: "1",
     name: "John Doe",
