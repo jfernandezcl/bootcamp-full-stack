@@ -1,7 +1,8 @@
 import express from 'express';
 import { v1 as uuid } from 'uuid';
 import patients from '../data/patients';
-import { NewPatient, Patient, NonSensitivePatient } from '../types/types';
+import { NonSensitivePatient, Patient } from '../types/types';
+import { toNewPatient } from '../utils/patientParser';
 
 const router = express.Router();
 
@@ -18,28 +19,19 @@ router.get('/', (_req, res) => {
 });
 
 router.post('/', (req, res) => {
-  const { name, dateOfBirth, ssn, gender, occupation } = req.body;
+  try {
+    const newPatient = toNewPatient(req.body);
 
-  if (!name || !dateOfBirth || !ssn || !gender || !occupation) {
-    res.status(400).json({ error: 'Missing required fields' });
-    return;
+    const patient: Patient = {
+      id: uuid(),
+      ...newPatient,
+    };
+
+    patients.push(patient);
+    res.json(patient);
+  } catch (error) {
+    res.status(400).json({ error: (error as Error).message });
   }
-
-  const newPatient: NewPatient = {
-    name,
-    dateOfBirth,
-    ssn,
-    gender,
-    occupation,
-  };
-
-  const patient: Patient = {
-    id: uuid(),
-    ...newPatient,
-  };
-
-  patients.push(patient);
-  res.json(patient);
 });
 
 export default router;
