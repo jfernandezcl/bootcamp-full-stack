@@ -1,17 +1,17 @@
-export enum Gender {
-  Male = 'male',
-  Female = 'female',
-  Other = 'other',
+/* eslint-disable @typescript-eslint/no-empty-object-type */
+ 
+export interface Entry {
+  // Aquí podrías definir los campos relacionados con las entradas si fueran necesarios en el futuro
 }
 
 export interface Patient {
   id: string;
   name: string;
-  dateOfBirth: string;
   ssn: string;
-  gender: Gender;
   occupation: string;
+  gender: Gender;
+  dateOfBirth: string;
+  entries: Entry[];
 }
 
-export type NewPatient = Omit<Patient, 'id'>;
-export type NonSensitivePatient = Omit<Patient, 'ssn'>;
+export type NonSensitivePatient = Omit<Patient, 'ssn' | 'entries'>;
