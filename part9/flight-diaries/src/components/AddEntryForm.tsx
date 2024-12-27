@@ -1,9 +1,12 @@
 import React, { useState } from 'react';
 
+// Tipado para las entradas de diario
 interface Entry {
   date: string;
   description: string;
   flightHours: number;
+  weather: 'sunny' | 'cloudy' | 'rainy'; // Añadimos el clima
+  visibility: 'good' | 'poor'; // Añadimos la visibilidad
 }
 
 const AddEntryForm: React.FC = () => {
@@ -11,10 +14,21 @@ const AddEntryForm: React.FC = () => {
     date: '',
     description: '',
     flightHours: 0,
+    weather: 'sunny', // Valor por defecto para el clima
+    visibility: 'good', // Valor por defecto para la visibilidad
   });
   const [error, setError] = useState<string | null>(null); // Estado para manejar errores
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    setEntry({
+      ...entry,
+      [name]: value,
+    });
+  };
+
+  // Función para manejar los cambios en los radio buttons
+  const handleRadioChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setEntry({
       ...entry,
@@ -54,7 +68,7 @@ const AddEntryForm: React.FC = () => {
         <div>
           <label>Date</label>
           <input
-            type="text"
+            type="date"
             name="date"
             value={entry.date}
             onChange={handleChange}
@@ -80,6 +94,62 @@ const AddEntryForm: React.FC = () => {
             required
           />
         </div>
+        <div>
+          <label>Weather</label>
+          <label>
+            <input
+              type="radio"
+              name="weather"
+              value="sunny"
+              checked={entry.weather === 'sunny'}
+              onChange={handleRadioChange}
+            />
+            Sunny
+          </label>
+          <label>
+            <input
+              type="radio"
+              name="weather"
+              value="cloudy"
+              checked={entry.weather === 'cloudy'}
+              onChange={handleRadioChange}
+            />
+            Cloudy
+          </label>
+          <label>
+            <input
+              type="radio"
+              name="weather"
+              value="rainy"
+              checked={entry.weather === 'rainy'}
+              onChange={handleRadioChange}
+            />
+            Rainy
+          </label>
+        </div>
+        <div>
+          <label>Visibility</label>
+          <label>
+            <input
+              type="radio"
+              name="visibility"
+              value="good"
+              checked={entry.visibility === 'good'}
+              onChange={handleRadioChange}
+            />
+            Good
+          </label>
+          <label>
+            <input
+              type="radio"
+              name="visibility"
+              value="poor"
+              checked={entry.visibility === 'poor'}
+              onChange={handleRadioChange}
+            />
+            Poor
+          </label>
+        </div>
         <button type="submit">Add Entry</button>
       </form>
 
@@ -94,4 +164,5 @@ const AddEntryForm: React.FC = () => {
 };
 
 export default AddEntryForm;
+
 
