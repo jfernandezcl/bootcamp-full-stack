@@ -1,42 +1,47 @@
-import React, { useEffect, useState } from "react";
-import { getAllDiaries } from "./services/diaryService";
-import { DiaryEntry } from "./types";
+import React, { useState, useEffect } from 'react';
+import AddEntryForm from './components/AddEntryForm';
+
+interface Entry {
+  id: number;
+  date: string;
+  description: string;
+  flightHours: number;
+}
 
 const App: React.FC = () => {
-  const [diaries, setDiaries] = useState<DiaryEntry[]>([]);
+  const [entries, setEntries] = useState<Entry[]>([]);
 
+  // Obtener las entradas del backend
   useEffect(() => {
-    const fetchDiaries = async () => {
-      try {
-        const data = await getAllDiaries();
-        setDiaries(data);
-      } catch (error) {
-        console.error("Failed to fetch diaries:", error);
-      }
+    const fetchEntries = async () => {
+      const response = await fetch('http://localhost:3001/api/entries');
+      const data = await response.json();
+      setEntries(data);
     };
 
-    fetchDiaries();
+    fetchEntries();
   }, []);
 
   return (
     <div>
-      <h1>Flight Diaries</h1>
-      {diaries.length === 0 ? (
-        <p>No diaries available</p>
-      ) : (
-        <ul>
-          {diaries.map((diary) => (
-            <li key={diary.id}>
-              <p><strong>Date:</strong> {diary.date}</p>
-              <p><strong>Weather:</strong> {diary.weather}</p>
-              <p><strong>Visibility:</strong> {diary.visibility}</p>
-              {diary.comment && <p><strong>Comment:</strong> {diary.comment}</p>}
-            </li>
-          ))}
-        </ul>
-      )}
+      <h1>Flight Log</h1>
+
+      {/* Mostrar las entradas */}
+      <ul>
+        {entries.map((entry) => (
+          <li key={entry.id}>
+            <strong>{entry.date}</strong>
+            <p>{entry.description}</p>
+            <p>Flight hours: {entry.flightHours}</p>
+          </li>
+        ))}
+      </ul>
+
+      {/* Formulario para agregar nueva entrada */}
+      <AddEntryForm />
     </div>
   );
 };
 
 export default App;
+
