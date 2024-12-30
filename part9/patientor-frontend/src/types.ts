@@ -8,7 +8,7 @@ export interface BaseEntry {
 
 export interface HealthCheckEntry extends BaseEntry {
   type: "HealthCheck";
-  healthCheckRating: 0 | 1 | 2 | 3; // Enum can be defined if needed
+  healthCheckRating: 0 | 1 | 2 | 3;
 }
 
 export interface OccupationalHealthCareEntry extends BaseEntry {
