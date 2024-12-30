@@ -1,38 +1,31 @@
-export interface OccupationalHealthCareEntry {
-  type: "OccupationalHealthCare";
-  description: string;
+export interface BaseEntry {
+  id: string;
   date: string;
+  description: string;
   specialist: string;
-  employerName: string;
-  diagnoseCodes?: string[];
+  diagnoseCodes?: Array<string>;
 }
 
-export interface HospitalEntry {
+export interface HealthCheckEntry extends BaseEntry {
+  type: "HealthCheck";
+  healthCheckRating: 0 | 1 | 2 | 3; // Enum can be defined if needed
+}
+
+export interface OccupationalHealthCareEntry extends BaseEntry {
+  type: "OccupationalHealthcare";
+  employerName: string;
+  sickLeave?: {
+    startDate: string;
+    endDate: string;
+  };
+}
+
+export interface HospitalEntry extends BaseEntry {
   type: "Hospital";
-  description: string;
-  date: string;
   discharge: {
     date: string;
     criteria: string;
   };
-  specialist: string;
-  diagnoseCodes?: string[];
 }
 
-export type Entry = OccupationalHealthCareEntry | HospitalEntry;
-
-export interface Patient {
-  id: string;
-  name: string;
-  ssn: string;
-  occupation: string;
-  gender: string;
-  dateOfBirth: string;
-  entries: Entry[];
-}
-
-export interface Diagnose {
-  code: string;
-  name: string;
-  latin?: string;
-}
+export type Entry = HealthCheckEntry | OccupationalHealthCareEntry | HospitalEntry;
