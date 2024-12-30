@@ -1,92 +1,98 @@
 import React, { useState } from 'react';
-import axios from 'axios';
+import { Entry, HealthCheckEntry, HospitalEntry, OccupationalHealthcareEntry } from '../types/entry';
 
-interface Props {
-  patientId: string;
-  onEntryAdded: () => void; // Callback para actualizar las entradas del paciente
-}
-
-const PatientEntryForm: React.FC<Props> = ({ patientId, onEntryAdded }) => {
+const PatientEntryForm: React.FC<{ patientId: string, addEntry: (entry: Entry) => void }> = ({ patientId, addEntry }) => {
+  const [type, setType] = useState<'HealthCheck' | 'Hospital' | 'OccupationalHealthcare'>('HealthCheck');
   const [description, setDescription] = useState('');
+  const [date, setDate] = useState('');
   const [specialist, setSpecialist] = useState('');
   const [healthCheckRating, setHealthCheckRating] = useState(0);
-  const [diagnosisCodes, setDiagnosisCodes] = useState<string[]>([]);
-  const [error, setError] = useState<string>('');
+  const [dischargeDate, setDischargeDate] = useState('');
+  const [dischargeCriteria, setDischargeCriteria] = useState('');
+  const [employerName, setEmployerName] = useState('');
+  const [sickLeaveStartDate, setSickLeaveStartDate] = useState('');
+  const [sickLeaveEndDate, setSickLeaveEndDate] = useState('');
 
-  const handleSubmit = async (event: React.FormEvent) => {
+  const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
 
-    // Construir el objeto de la nueva entrada
-    const entry = {
-      type: 'HealthCheck',
-      date: new Date().toISOString(),
-      description,
-      specialist,
-      healthCheckRating,
-      diagnosisCodes,
-    };
-
-    try {
-      // Enviar la entrada al backend
-      await axios.post(`/api/patients/${patientId}/entries`, entry);
-
-      // Si la entrada es exitosa, actualizamos las entradas del paciente
-      onEntryAdded();
-      setDescription('');
-      setSpecialist('');
-      setHealthCheckRating(0);
-      setDiagnosisCodes([]);
-      setError(''); // Limpiar cualquier mensaje de error
-    } catch (err: any) {
-      // Si hay un error en el backend (por ejemplo, datos inválidos)
-      setError(err.response?.data?.error || 'Error al agregar la entrada');
+    let entry: Entry;
+    if (type === 'HealthCheck') {
+      entry = { type, description, date, specialist, healthCheckRating };
+    } else if (type === 'Hospital') {
+      entry = { type, description, date, specialist, discharge: { date: dischargeDate, criteria: dischargeCriteria } };
+    } else {
+      entry = { type, description, date, specialist, employerName, sickLeave: sickLeaveStartDate && sickLeaveEndDate ? { startDate: sickLeaveStartDate, endDate: sickLeaveEndDate } : undefined };
     }
+
+    addEntry(entry); // Aquí llamaríamos al prop que pasamos para agregar la entrada
   };
 
   return (
-    <div>
-      <h3>Agregar Entrada de Control de Salud</h3>
-      <form onSubmit={handleSubmit}>
+    <form onSubmit={handleSubmit}>
+      <div>
+        <label>Tipo de Entrada:</label>
+        <select value={type} onChange={(e) => setType(e.target.value as 'HealthCheck' | 'Hospital' | 'OccupationalHealthcare')}>
+          <option value="HealthCheck">Salud</option>
+          <option value="Hospital">Hospital</option>
+          <option value="OccupationalHealthcare">Salud Laboral</option>
+        </select>
+      </div>
+
+      <div>
+        <label>Descripción:</label>
+        <input type="text" value={description} onChange={(e) => setDescription(e.target.value)} />
+      </div>
+
+      <div>
+        <label>Fecha:</label>
+        <input type="date" value={date} onChange={(e) => setDate(e.target.value)} />
+      </div>
+
+      <div>
+        <label>Especialista:</label>
+        <input type="text" value={specialist} onChange={(e) => setSpecialist(e.target.value)} />
+      </div>
+
+      {type === 'HealthCheck' && (
         <div>
-          <label>Descripción:</label>
-          <input
-            type="text"
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-          />
+          <label>Rating de Salud:</label>
+          <input type="number" value={healthCheckRating} onChange={(e) => setHealthCheckRating(Number(e.target.value))} />
         </div>
-        <div>
-          <label>Especialista:</label>
-          <input
-            type="text"
-            value={specialist}
-            onChange={(e) => setSpecialist(e.target.value)}
-          />
-        </div>
-        <div>
-          <label>Health Check Rating (0-3):</label>
-          <input
-            type="number"
-            min="0"
-            max="3"
-            value={healthCheckRating}
-            onChange={(e) => setHealthCheckRating(Number(e.target.value))}
-          />
-        </div>
-        <div>
-          <label>Códigos de Diagnóstico:</label>
-          <input
-            type="text"
-            value={diagnosisCodes.join(', ')}
-            onChange={(e) => setDiagnosisCodes(e.target.value.split(',').map(code => code.trim()))}
-          />
-        </div>
-        <div>
-          {error && <p style={{ color: 'red' }}>{error}</p>}
-        </div>
-        <button type="submit">Agregar Entrada</button>
-      </form>
-    </div>
+      )}
+
+      {type === 'Hospital' && (
+        <>
+          <div>
+            <label>Fecha de Alta:</label>
+            <input type="date" value={dischargeDate} onChange={(e) => setDischargeDate(e.target.value)} />
+          </div>
+          <div>
+            <label>Criterio de Alta:</label>
+            <input type="text" value={dischargeCriteria} onChange={(e) => setDischargeCriteria(e.target.value)} />
+          </div>
+        </>
+      )}
+
+      {type === 'OccupationalHealthcare' && (
+        <>
+          <div>
+            <label>Nombre de Empleador:</label>
+            <input type="text" value={employerName} onChange={(e) => setEmployerName(e.target.value)} />
+          </div>
+          <div>
+            <label>Fecha de Baja (Inicio):</label>
+            <input type="date" value={sickLeaveStartDate} onChange={(e) => setSickLeaveStartDate(e.target.value)} />
+          </div>
+          <div>
+            <label>Fecha de Baja (Fin):</label>
+            <input type="date" value={sickLeaveEndDate} onChange={(e) => setSickLeaveEndDate(e.target.value)} />
+          </div>
+        </>
+      )}
+
+      <button type="submit">Agregar Entrada</button>
+    </form>
   );
 };
 

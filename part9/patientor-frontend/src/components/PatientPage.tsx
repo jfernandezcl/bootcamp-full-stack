@@ -1,63 +1,29 @@
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import React, { useState, useEffect } from 'react';
 import PatientEntryForm from './PatientEntryForm';
 
-interface Patient {
-  id: string;
-  name: string;
-  ssn: string;
-  occupation: string;
-  gender: string;
-  dateOfBirth: string;
-  entries: Array<any>;
-}
-
 const PatientPage: React.FC<{ patientId: string }> = ({ patientId }) => {
-  const [patient, setPatient] = useState<Patient | null>(null);
+  const [patient, setPatient] = useState(null);
+  const [entries, setEntries] = useState([]);
 
   useEffect(() => {
-    const fetchPatientData = async () => {
-      try {
-        const response = await axios.get(`/api/patients/${patientId}`);
-        setPatient(response.data);
-      } catch (error) {
-        console.error('Error fetching patient data', error);
-      }
-    };
-
-    fetchPatientData();
+    // Fetch paciente y sus entradas
   }, [patientId]);
 
-  const handleEntryAdded = () => {
-    // Actualizar las entradas al agregar una nueva
-    if (patient) {
-      axios.get(`/api/patients/${patientId}`).then((response) => {
-        setPatient(response.data);
-      });
-    }
+  const addEntry = (entry) => {
+    // Llamar al backend para agregar la entrada
   };
-
-  if (!patient) {
-    return <div>Cargando datos del paciente...</div>;
-  }
 
   return (
     <div>
-      <h2>{patient.name}</h2>
-      <p>SSN: {patient.ssn}</p>
-      <p>Fecha de nacimiento: {patient.dateOfBirth}</p>
-      <p>Ocupación: {patient.occupation}</p>
-
+      <h2>Información del Paciente</h2>
+      <div>{patient?.name}</div>
       <h3>Entradas</h3>
-      <ul>
-        {patient.entries.map((entry: any) => (
-          <li key={entry.id}>
-            <strong>{entry.date}</strong> - {entry.description}
-          </li>
+      <PatientEntryForm patientId={patientId} addEntry={addEntry} />
+      <div>
+        {entries.map((entry, index) => (
+          <div key={index}>{entry.description}</div>
         ))}
-      </ul>
-
-      <PatientEntryForm patientId={patientId} onEntryAdded={handleEntryAdded} />
+      </div>
     </div>
   );
 };

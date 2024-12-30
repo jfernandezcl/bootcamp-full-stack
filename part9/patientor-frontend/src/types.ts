@@ -1,18 +1,27 @@
-export interface BaseEntry {
-  id: string;
-  date: string;
-  description: string;
-  specialist: string;
-  diagnoseCodes?: Array<string>;
-}
-
-export interface HealthCheckEntry extends BaseEntry {
+export interface HealthCheckEntry {
   type: "HealthCheck";
-  healthCheckRating: 0 | 1 | 2 | 3;
+  description: string;
+  date: string;
+  specialist: string;
+  healthCheckRating: number; // Un número entre 0 y 3
 }
 
-export interface OccupationalHealthCareEntry extends BaseEntry {
+export interface HospitalEntry {
+  type: "Hospital";
+  description: string;
+  date: string;
+  specialist: string;
+  discharge: {
+    date: string;
+    criteria: string;
+  };
+}
+
+export interface OccupationalHealthcareEntry {
   type: "OccupationalHealthcare";
+  description: string;
+  date: string;
+  specialist: string;
   employerName: string;
   sickLeave?: {
     startDate: string;
@@ -20,12 +29,4 @@ export interface OccupationalHealthCareEntry extends BaseEntry {
   };
 }
 
-export interface HospitalEntry extends BaseEntry {
-  type: "Hospital";
-  discharge: {
-    date: string;
-    criteria: string;
-  };
-}
-
-export type Entry = HealthCheckEntry | OccupationalHealthCareEntry | HospitalEntry;
+export type Entry = HealthCheckEntry | HospitalEntry | OccupationalHealthcareEntry;

@@ -1,16 +1,20 @@
 import express from 'express';
-import patientService from '../services/patientService';
+import { createEntry } from '../services/patientService';
 
 const router = express.Router();
 
-router.get('/:id', (req, res) => {
-  const patient = patientService.getPatientById(req.params.id);
+router.post('/:id/entries', async (req, res) => {
+  try {
+    const patientId = req.params.id;
+    const entry = req.body;
 
-  if (!patient) {
-    return res.status(404).send({ error: 'Patient not found' });
+    // Llamar al servicio para agregar la entrada
+    const updatedPatient = await createEntry(patientId, entry);
+    res.json(updatedPatient);
+  } catch (error) {
+    res.status(400).send('Error al agregar entrada');
   }
-
-  res.json(patient);
 });
 
 export default router;
+
