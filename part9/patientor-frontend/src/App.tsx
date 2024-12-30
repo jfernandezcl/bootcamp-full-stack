@@ -1,20 +1,15 @@
-import React from 'react';
-import { Routes, Route } from 'react-router-dom';
-import PatientList from './components/PatientList';
-import PatientPage from './components/PatientPage';
-import { Container, Typography } from '@mui/material';
+import React from "react";
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import PatientDetails from "./components/PatientDetails";
 
 const App: React.FC = () => {
   return (
-    <Container>
-      <Typography variant="h2" gutterBottom>
-        Patientor
-      </Typography>
+    <Router>
       <Routes>
-        <Route path="/" element={<PatientList />} />
-        <Route path="/patients/:id" element={<PatientPage />} />
+        <Route path="/" element={<PatientListPage />} />
+        <Route path="/patients/:id" element={<PatientDetails />} />
       </Routes>
-    </Container>
+    </Router>
   );
 };
 
