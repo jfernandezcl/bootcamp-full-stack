@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { NativeRouter, Routes, Route } from 'react-router-native';
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet, Text } from 'react-native';
 import AppBar from './components/AppBar'; // Importamos la barra de navegación
 import RepositoryList from './components/RepositoryList'; // Importamos la lista de repositorios
 import SignIn from './components/SignIn'; // Importamos el componente de inicio de sesión
+import theme from './theme';  // Importamos el archivo theme.js
 
 const App = () => {
   // Estado para los repositorios
@@ -43,6 +44,11 @@ const App = () => {
           <Route path="/" element={<RepositoryList repositories={repositories} />} />
           <Route path="/signin" element={<SignIn />} />
         </Routes>
+
+        {/* Ejemplo de uso del tema de fuente */}
+        <Text style={{ fontFamily: theme.fontFamily }}>
+          Bienvenido a la aplicación
+        </Text>
       </View>
     </NativeRouter>
   );
