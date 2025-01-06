@@ -9,6 +9,19 @@ import client from './apollo-client';
 import { ApolloProvider } from '@apollo/client';
 
 const App = () => {
+
+  useEffect(() => {
+    const checkToken = async () => {
+      const token = await authStorage.getAccessToken();
+      if (token) {
+        console.log('Usuario autenticado con token:', token);
+        // Realizar acciones, como navegar al área autenticada
+      }
+    };
+    checkToken();
+  }, []);
+
+
   // Estado para los repositorios
   const [repositories, setRepositories] = useState([
     {

@@ -3,6 +3,8 @@ import { Formik } from 'formik';
 import { View, Button, StyleSheet } from 'react-native';
 import FormikTextInput from './FormikTextInput';
 import useSignIn from '../hooks/useSignIn';
+import useSignIn from '../hooks/useSignIn';
+import authStorage from '../utils/authStorageInstance';
 
 const SignIn = () => {
   const [signIn] = useSignIn();
@@ -11,10 +13,15 @@ const SignIn = () => {
     const { username, password } = values;
 
     try {
-      const { authorize } = await signIn({ username, password });
-      console.log('Access token:', authorize.accessToken);
-    } catch (error) {
-      console.error('Error al iniciar sesión:', error);
+      const { data } = await signIn({ username, password });
+
+      if (data?.authorize?.accessToken) {
+        // Guardar el token en el almacenamiento
+        await authStorage.setAccessToken(data.authorize.accessToken);
+        console.log('Token guardado:', data.authorize.accessToken);
+      }
+    } catch (e) {
+      console.error('Error al iniciar sesión:', e);
     }
   };
 
