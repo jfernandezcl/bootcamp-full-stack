@@ -5,6 +5,8 @@ import AppBar from './components/AppBar'; // Importamos la barra de navegación
 import RepositoryList from './components/RepositoryList'; // Importamos la lista de repositorios
 import SignIn from './components/SignIn'; // Importamos el componente de inicio de sesión
 import theme from './theme';  // Importamos el archivo theme.js
+import client from './apollo-client';
+import { ApolloProvider } from '@apollo/client';
 
 const App = () => {
   // Estado para los repositorios
@@ -34,23 +36,25 @@ const App = () => {
   ]);
 
   return (
-    <NativeRouter>
-      <View style={styles.container}>
-        {/* Barra de navegación */}
-        <AppBar />
+    <ApolloProvider>
+      <NativeRouter>
+        <View style={styles.container}>
+          {/* Barra de navegación */}
+          <AppBar />
 
-        {/* Definición de las rutas */}
-        <Routes>
-          <Route path="/" element={<RepositoryList repositories={repositories} />} />
-          <Route path="/signin" element={<SignIn />} />
-        </Routes>
+          {/* Definición de las rutas */}
+          <Routes>
+            <Route path="/" element={<RepositoryList repositories={repositories} />} />
+            <Route path="/signin" element={<SignIn />} />
+          </Routes>
 
-        {/* Ejemplo de uso del tema de fuente */}
-        <Text style={{ fontFamily: theme.fontFamily }}>
-          Bienvenido a la aplicación
-        </Text>
-      </View>
-    </NativeRouter>
+          {/* Ejemplo de uso del tema de fuente */}
+          <Text style={{ fontFamily: theme.fontFamily }}>
+            Bienvenido a la aplicación
+          </Text>
+        </View>
+      </NativeRouter>
+    </ApolloProvider>
   );
 };
 
