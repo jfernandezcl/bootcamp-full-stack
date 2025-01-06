@@ -8,6 +8,7 @@ import authStorage from '../utils/authStorageInstance';
 
 const SignIn = () => {
   const [signIn] = useSignIn();
+  const history = useHistory();
 
   const onSubmit = async (values) => {
     const { username, password } = values;
@@ -16,14 +17,13 @@ const SignIn = () => {
       const { data } = await signIn({ username, password });
 
       if (data?.authorize?.accessToken) {
-        // Guardar el token en el almacenamiento
-        await authStorage.setAccessToken(data.authorize.accessToken);
-        console.log('Token guardado:', data.authorize.accessToken);
+        history.push('/repositories');
       }
     } catch (e) {
       console.error('Error al iniciar sesión:', e);
     }
   };
+
 
   return (
     <Formik
