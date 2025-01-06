@@ -1,14 +1,22 @@
 import React from 'react';
-import RepositoryItem from './RepositoryItem';  // Importar el componente RepositoryItem
+import RepositoryItem from './RepositoryItem';
 
 const RepositoryList = ({ repositories }) => {
   return (
-    <div>
-      {repositories.map(repo => (
-        <RepositoryItem key={repo.id} repo={repo} />  // Usar RepositoryItem para mostrar los repositorios
+    <div style={style.container}>
+      {repositories.map((repo) => (
+        <RepositoryItem key={repo.id} repo={repo} />
       ))}
     </div>
   );
+};
+
+const styles = {
+  container: {
+    backgroundColor: '#e1e4e8',
+    padding: '10px',
+    minHeight: '100vh',
+  },
 };
 
 export default RepositoryList;
