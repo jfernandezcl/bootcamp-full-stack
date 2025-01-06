@@ -1,22 +1,39 @@
 import React from 'react';
-import { View, StyleSheet, ScrollView } from 'react-native';
-import { Link } from 'react-router-native'; // Importamos Link
-import Text from './Text'; // Importamos el componente Text
+import { View, StyleSheet, ScrollView, Pressable } from 'react-native';
+import { Link } from 'react-router-native';
+import { useQuery, useApolloClient } from '@apollo/client';
+import Text from './Text';
+import { ME } from '../graphql/queries'; // Consulta para obtener la información del usuario
+import authStorage from '../utils/authStorage'; // Clase para manejar el almacenamiento
 
 const AppBar = () => {
+  const { data } = useQuery(ME); // Consulta para verificar si el usuario está autenticado
+  const apolloClient = useApolloClient();
+
+  // Función para manejar el cierre de sesión
+  const handleSignOut = async () => {
+    await authStorage.removeAccessToken(); // Elimina el token del almacenamiento
+    await apolloClient.resetStore(); // Restablece la tienda de Apollo
+  };
+
   return (
     <View style={styles.container}>
-      {/* Componente ScrollView para el desplazamiento horizontal */}
       <ScrollView horizontal style={styles.scrollView}>
         {/* Enlace a la vista de repositorios */}
         <Link to="/" style={styles.link}>
           <Text color="white" fontWeight="bold">Repositories</Text>
         </Link>
-        {/* Enlace a la vista de inicio de sesión */}
-        <Link to="/signin" style={styles.link}>
-          <Text color="white" fontWeight="bold">Sign In</Text>
-        </Link>
-        {/* Agregar más pestañas de ejemplo */}
+        {/* Lógica para mostrar Sign In o Sign Out */}
+        {data?.me ? (
+          <Pressable onPress={handleSignOut} style={styles.link}>
+            <Text color="white" fontWeight="bold">Sign Out</Text>
+          </Pressable>
+        ) : (
+          <Link to="/signin" style={styles.link}>
+            <Text color="white" fontWeight="bold">Sign In</Text>
+          </Link>
+        )}
+        {/* Pestañas adicionales */}
         <Link to="/about" style={styles.link}>
           <Text color="white" fontWeight="bold">About</Text>
         </Link>
@@ -36,7 +53,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#24292e',
   },
   scrollView: {
-    flexDirection: 'row', // Asegura que las pestañas estén en fila
+    flexDirection: 'row',
   },
   link: {
     marginHorizontal: 10,
