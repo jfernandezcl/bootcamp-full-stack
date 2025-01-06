@@ -2,19 +2,17 @@ import React from 'react';
 import { TextInput, StyleSheet, Text } from 'react-native';
 import { useField } from 'formik';
 
-const FormikTextInput = ({ style, ...props }) => {
+const FormikTextInput = ({ style, error, ...props }) => {
   const [field, meta] = useField(props);
 
   return (
     <React.Fragment>
       <TextInput
-        style={[styles.input, style]}
+        style={[styles.input, style]} // Se aplica el estilo condicional
         {...field}
         {...props}
       />
-      {meta.touched && meta.error ? (
-        <Text style={styles.error}>{meta.error}</Text>
-      ) : null}
+      {error && <Text style={styles.error}>{error}</Text>}  {/* Mensaje de error */}
     </React.Fragment>
   );
 };
@@ -28,7 +26,7 @@ const styles = StyleSheet.create({
     paddingLeft: 8,
   },
   error: {
-    color: 'red',
+    color: '#d73a4a', // Color rojo para los mensajes de error
     fontSize: 12,
   },
 });

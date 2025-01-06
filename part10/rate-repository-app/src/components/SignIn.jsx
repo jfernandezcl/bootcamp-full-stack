@@ -1,8 +1,8 @@
 import React from 'react';
-import { View, Button, StyleSheet, TextInput } from 'react-native';
+import { View, Button, StyleSheet } from 'react-native';
 import { Formik } from 'formik';
-import * as Yup from 'yup'; // Para validaciones si es necesario
-import FormikTextInput from './FormikTextInput.jsx'; // Importamos el componente FormikTextInput
+import * as Yup from 'yup'; // Para validaciones
+import FormikTextInput from './FormikTextInput'; // Importamos el componente FormikTextInput
 
 // Esquema de validación con Yup
 const validationSchema = Yup.object().shape({
@@ -23,21 +23,33 @@ const SignIn = () => {
         onSubmit={onSubmit}
         validationSchema={validationSchema}
       >
-        {({ handleSubmit, handleChange, values }) => (
+        {({ handleSubmit, handleChange, values, touched, errors }) => (
           <>
             <FormikTextInput
               name="username"
               placeholder="Username"
               value={values.username}
               onChangeText={handleChange('username')}
+              error={touched.username && errors.username}
+              style={touched.username && errors.username ? styles.inputError : null}
             />
+            {touched.username && errors.username && (
+              <Text style={styles.error}>{errors.username}</Text>
+            )}
+
             <FormikTextInput
               name="password"
               placeholder="Password"
               value={values.password}
               onChangeText={handleChange('password')}
-              secureTextEntry // Esto oculta el texto de la contraseña
+              secureTextEntry
+              error={touched.password && errors.password}
+              style={touched.password && errors.password ? styles.inputError : null}
             />
+            {touched.password && errors.password && (
+              <Text style={styles.error}>{errors.password}</Text>
+            )}
+
             <Button title="Sign In" onPress={handleSubmit} />
           </>
         )}
@@ -52,6 +64,22 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     flex: 1,
   },
+  input: {
+    height: 40,
+    borderColor: '#ccc',
+    borderWidth: 1,
+    marginBottom: 10,
+    paddingLeft: 8,
+  },
+  inputError: {
+    borderColor: '#d73a4a', // Rojo para indicar un error
+  },
+  error: {
+    color: '#d73a4a', // Rojo para el mensaje de error
+    fontSize: 12,
+    marginBottom: 10,
+  },
 });
 
 export default SignIn;
+
