@@ -1,8 +1,12 @@
 import React, { useState } from 'react';
-import AppBar from './components/AppBar';
-import RepositoryList from './components/RepositoryList';
+import { NativeRouter, Routes, Route } from 'react-router-native';
+import { View, StyleSheet } from 'react-native';
+import AppBar from './components/AppBar'; // Importamos la barra de navegación
+import RepositoryList from './components/RepositoryList'; // Importamos la lista de repositorios
+import SignIn from './components/SignIn'; // Importamos el componente de inicio de sesión
 
 const App = () => {
+  // Estado para los repositorios
   const [repositories, setRepositories] = useState([
     {
       id: '1',
@@ -29,11 +33,26 @@ const App = () => {
   ]);
 
   return (
-    <div>
-      <AppBar />
-      <RepositoryList repositories={repositories} />
-    </div>
+    <NativeRouter>
+      <View style={styles.container}>
+        {/* Barra de navegación */}
+        <AppBar />
+
+        {/* Definición de las rutas */}
+        <Routes>
+          <Route path="/" element={<RepositoryList repositories={repositories} />} />
+          <Route path="/signin" element={<SignIn />} />
+        </Routes>
+      </View>
+    </NativeRouter>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
+  },
+});
 
 export default App;
