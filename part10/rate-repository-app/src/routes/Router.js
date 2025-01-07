@@ -1,14 +1,17 @@
+import React from 'react';
 import { NativeRouter, Route, Switch } from 'react-router-native';
-import Repository from '../pages/Repository';
-import RepositoryList from '../pages/RepositoryList';
+import RepositoryList from './components/RepositoryList';
+import SingleRepository from './components/SingleRepository';
 
-const Router = () => (
-  <NativeRouter>
-    <Switch>
-      <Route path="/" exact component={RepositoryList} />
-      <Route path="/repository/:id" component={Repository} />
-    </Switch>
-  </NativeRouter>
-);
+const App = () => {
+  return (
+    <NativeRouter>
+      <Switch>
+        <Route path="/" exact component={RepositoryList} />
+        <Route path="/repository/:id" component={SingleRepository} />
+      </Switch>
+    </NativeRouter>
+  );
+};
 
-export default Router;
+export default App;
