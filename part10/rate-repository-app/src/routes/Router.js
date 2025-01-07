@@ -1,17 +1,15 @@
 import React from 'react';
-import { NativeRouter, Route, Switch } from 'react-router-native';
+import { Route, Switch } from 'react-router-native';
 import RepositoryList from './components/RepositoryList';
 import SingleRepository from './components/SingleRepository';
+import ReviewForm from './components/ReviewForm';
 
-const App = () => {
-  return (
-    <NativeRouter>
-      <Switch>
-        <Route path="/" exact component={RepositoryList} />
-        <Route path="/repository/:id" component={SingleRepository} />
-      </Switch>
-    </NativeRouter>
-  );
-};
+const Routes = () => (
+  <Switch>
+    <Route path="/" exact component={RepositoryList} />
+    <Route path="/repository/:id" component={SingleRepository} />
+    <Route path="/create-review" component={ReviewForm} />
+  </Switch>
+);
 
-export default App;
+export default Routes;
