@@ -1,93 +1,106 @@
-import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, Picker } from 'react-native';
+import useRepositories from '../hooks/useRepositories';  // Importamos el hook
+import { useHistory } from 'react-router-native';
 
-const RepositoryItem = ({ repo, showGitHubButton }) => {
-  const formatCount = (count) => (count >= 1000 ? `${(count / 1000).toFixed(1)}k` : count);
+const RepositoryList = () => {
+  const [orderBy, setOrderBy] = useState('CREATEDAT');
+  const [orderDirection, setOrderDirection] = useState('DESC');
+
+  const { repositories, loading, error, refetch } = useRepositories(orderBy, orderDirection); // Se pasa el orden a nuestro hook
+  const history = useHistory();
+
+  const handlePress = (id) => {
+    history.push(`/repository/${id}`); // Navegamos al repositorio seleccionado
+  };
+
+  // Lógica para manejar el cambio de selección del principio de ordenación
+  const handleOrderChange = (selectedOrder) => {
+    if (selectedOrder === 'latest') {
+      setOrderBy('CREATEDAT');
+      setOrderDirection('DESC');
+    } else if (selectedOrder === 'topRated') {
+      setOrderBy('RATINGAVERAGE');
+      setOrderDirection('DESC');
+    } else if (selectedOrder === 'lowestRated') {
+      setOrderBy('RATINGAVERAGE');
+      setOrderDirection('ASC');
+    }
+  };
+
+  useEffect(() => {
+    // Refetch para aplicar el nuevo orden cuando cambian los filtros
+    refetch();
+  }, [orderBy, orderDirection, refetch]);
+
+  if (loading) return <Text>Cargando...</Text>;
+  if (error) return <Text>Error al cargar los repositorios.</Text>;
 
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
-        <img src={repo.ownerAvatarUrl} alt="Owner avatar" style={styles.avatar} />
-        <View style={styles.info}>
-          <Text style={styles.title}>{repo.name}</Text>
-          <Text style={styles.description}>{repo.description}</Text>
-          <Text style={styles.language}>{repo.language}</Text>
-        </View>
-      </View>
-      <View style={styles.stats}>
-        <View style={styles.statItem}>
-          <Text>{formatCount(repo.stargazersCount)}</Text>
-          <Text>Stars</Text>
-        </View>
-        <View style={styles.statItem}>
-          <Text>{formatCount(repo.forksCount)}</Text>
-          <Text>Forks</Text>
-        </View>
-        <View style={styles.statItem}>
-          <Text>{repo.reviewCount}</Text>
-          <Text>Reviews</Text>
-        </View>
-        <View style={styles.statItem}>
-          <Text>{repo.ratingAverage}</Text>
-          <Text>Rating</Text>
-        </View>
-      </View>
-      {showGitHubButton && (
-        <Button
-          title="Open in GitHub"
-          onPress={() => Linking.openURL(repo.url)}
-        />
-      )}
+      <Picker
+        selectedValue={orderBy === 'CREATEDAT' ? 'latest' : orderBy === 'RATINGAVERAGE' && orderDirection === 'DESC' ? 'topRated' : 'lowestRated'}
+        onValueChange={handleOrderChange}
+        style={styles.picker}
+      >
+        <Picker.Item label="Últimos repositorios" value="latest" />
+        <Picker.Item label="Repositorios mejor calificados" value="topRated" />
+        <Picker.Item label="Repositorios de menor calificación" value="lowestRated" />
+      </Picker>
+
+      <FlatList
+        data={repositories}
+        keyExtractor={(item) => item.id}
+        renderItem={({ item }) => (
+          <TouchableOpacity onPress={() => handlePress(item.id)}>
+            <View style={styles.repository}>
+              <Image source={{ uri: item.ownerAvatarUrl }} style={styles.avatar} />
+              <View style={styles.details}>
+                <Text style={styles.name}>{item.name}</Text>
+                <Text>{item.description}</Text>
+                <Text>{item.language}</Text>
+                <Text>Forks: {item.forksCount}</Text>
+                <Text>Stars: {item.stargazersCount}</Text>
+                <Text>Rating: {item.ratingAverage}</Text>
+              </View>
+            </View>
+          </TouchableOpacity>
+        )}
+      />
     </View>
   );
 };
 
-const styles = {
+const styles = StyleSheet.create({
   container: {
-    backgroundColor: 'white',
-    padding: 15,
-    borderRadius: 5,
-    marginBottom: 10,
+    flex: 1,
+    paddingTop: 20,
   },
-  header: {
+  picker: {
+    height: 50,
+    width: '100%',
+    backgroundColor: '#f8f8f8',
+    marginBottom: 20,
+  },
+  repository: {
     flexDirection: 'row',
-    marginBottom: 15,
+    padding: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: '#ccc',
   },
   avatar: {
     width: 50,
     height: 50,
-    borderRadius: 5,
-    marginRight: 15,
+    borderRadius: 25,
+    marginRight: 10,
   },
-  info: {
-    flexGrow: 1,
+  details: {
+    flex: 1,
   },
-  title: {
-    fontSize: 18,
+  name: {
     fontWeight: 'bold',
-    marginBottom: 5,
   },
-  description: {
-    fontSize: 14,
-    color: '#586069',
-    marginBottom: 10,
-  },
-  language: {
-    backgroundColor: '#0366d6',
-    color: 'white',
-    paddingVertical: 2,
-    paddingHorizontal: 8,
-    borderRadius: 5,
-    alignSelf: 'flex-start',
-  },
-  stats: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-  },
-  statItem: {
-    alignItems: 'center',
-  },
-};
+});
 
-export default RepositoryItem;
+export default RepositoryList;
 

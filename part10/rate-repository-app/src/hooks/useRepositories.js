@@ -1,32 +1,21 @@
-import { useQuery, gql } from '@apollo/client';
+import { useState, useEffect } from 'react';
+import { useQuery } from '@apollo/client';
+import { REPOSITORIES } from '../graphql/queries';  // La consulta GraphQL para obtener repositorios
 
-// Definir la consulta GraphQL
-const GET_REPOSITORIES = gql`
-  query {
-    repositories {
-      id
-      name
-      description
-      language
-      forksCount
-      stargazersCount
-      ratingAverage
-      reviewCount
-      ownerAvatarUrl
-    }
-  }
-`;
-
-const useRepositories = () => {
-  const { data, loading, error } = useQuery(GET_REPOSITORIES, {
-    fetchPolicy: 'cache-and-network',  // Usamos la política recomendada para evitar problemas de caché
+const useRepositories = (orderBy, orderDirection) => {
+  const { data, loading, error, refetch } = useQuery(REPOSITORIES, {
+    variables: {
+      orderBy,
+      orderDirection,
+    },
   });
 
-  // Verificamos si hubo un error o si los datos están cargando
-  if (loading) return { loading: true };
-  if (error) return { error: true };
-
-  return { repositories: data.repositories };  // Retornamos los repositorios obtenidos
+  return {
+    repositories: data ? data.repositories : [],
+    loading,
+    error,
+    refetch,
+  };
 };
 
 export default useRepositories;
