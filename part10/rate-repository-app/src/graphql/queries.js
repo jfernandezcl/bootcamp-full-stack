@@ -1,28 +1,26 @@
 import { gql } from '@apollo/client';
 
-export const GET_REVIEWS = gql`
-  query GetReviews($repositoryId: ID!, $first: Int, $after: String) {
-    repository(id: $repositoryId) {
+export const GET_CURRENT_USER = gql`
+  query getCurrentUser($includeReviews: Boolean = false) {
+    me {
       id
-      fullName
-      reviews(first: $first, after: $after) {
-        totalCount
+      username
+      email
+      reviews @include(if: $includeReviews) {
         edges {
           node {
             id
             text
             rating
             createdAt
-            user {
-              id
-              username
+            repository {
+              fullName
             }
           }
           cursor
         }
         pageInfo {
           endCursor
-          startCursor
           hasNextPage
         }
       }
