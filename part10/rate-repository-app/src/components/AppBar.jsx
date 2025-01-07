@@ -7,6 +7,7 @@ import { ME } from '../graphql/queries';
 import authStorage from '../utils/authStorage';
 
 const AppBar = () => {
+  // Consulta para verificar si el usuario está autenticado
   const { data } = useQuery(ME);
   const apolloClient = useApolloClient();
 
@@ -70,4 +71,3 @@ const styles = StyleSheet.create({
 });
 
 export default AppBar;
-
