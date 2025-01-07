@@ -1,80 +1,91 @@
 import React from 'react';
+import { View, Text, StyleSheet } from 'react-native';
 
-const RepositoryItem = ({ repo }) => {
+const RepositoryItem = ({ repo, showGitHubButton }) => {
   const formatCount = (count) => (count >= 1000 ? `${(count / 1000).toFixed(1)}k` : count);
 
   return (
-    <div style={styles.container}>
-      <div style={styles.header}>
+    <View style={styles.container}>
+      <View style={styles.header}>
         <img src={repo.ownerAvatarUrl} alt="Owner avatar" style={styles.avatar} />
-        <div style={styles.info}>
-          <h3 style={styles.title}>{repo.name}</h3>
-          <p style={styles.description}>{repo.description}</p>
-          <span style={styles.language}>{repo.language}</span>
-        </div>
-      </div>
-      <div style={styles.stats}>
-        <div style={styles.statItem}>
-          <strong>{formatCount(repo.stargazersCount)}</strong>
-          <p>Stars</p>
-        </div>
-        <div style={styles.statItem}>
-          <strong>{formatCount(repo.forksCount)}</strong>
-          <p>Forks</p>
-        </div>
-        <div style={styles.statItem}>
-          <strong>{repo.reviewCount}</strong>
-          <p>Reviews</p>
-        </div>
-        <div style={styles.statItem}>
-          <strong>{repo.ratingAverage}</strong>
-          <p>Rating</p>
-        </div>
-      </div>
-    </div>
+        <View style={styles.info}>
+          <Text style={styles.title}>{repo.name}</Text>
+          <Text style={styles.description}>{repo.description}</Text>
+          <Text style={styles.language}>{repo.language}</Text>
+        </View>
+      </View>
+      <View style={styles.stats}>
+        <View style={styles.statItem}>
+          <Text>{formatCount(repo.stargazersCount)}</Text>
+          <Text>Stars</Text>
+        </View>
+        <View style={styles.statItem}>
+          <Text>{formatCount(repo.forksCount)}</Text>
+          <Text>Forks</Text>
+        </View>
+        <View style={styles.statItem}>
+          <Text>{repo.reviewCount}</Text>
+          <Text>Reviews</Text>
+        </View>
+        <View style={styles.statItem}>
+          <Text>{repo.ratingAverage}</Text>
+          <Text>Rating</Text>
+        </View>
+      </View>
+      {showGitHubButton && (
+        <Button
+          title="Open in GitHub"
+          onPress={() => Linking.openURL(repo.url)}
+        />
+      )}
+    </View>
   );
 };
 
 const styles = {
   container: {
     backgroundColor: 'white',
-    padding: '15px',
-    borderRadius: '5px',
-    marginBottom: '10px',
+    padding: 15,
+    borderRadius: 5,
+    marginBottom: 10,
   },
   header: {
-    display: 'flex',
-    marginBottom: '15px',
+    flexDirection: 'row',
+    marginBottom: 15,
   },
   avatar: {
-    width: '50px',
-    height: '50px',
-    borderRadius: '5px',
-    marginRight: '15px',
+    width: 50,
+    height: 50,
+    borderRadius: 5,
+    marginRight: 15,
   },
   info: {
     flexGrow: 1,
   },
   title: {
-    margin: '0 0 5px',
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 5,
   },
   description: {
-    margin: '0 0 10px',
+    fontSize: 14,
     color: '#586069',
+    marginBottom: 10,
   },
   language: {
-    display: 'inline-block',
     backgroundColor: '#0366d6',
     color: 'white',
-    padding: '5px 10px',
-    borderRadius: '5px',
+    paddingVertical: 2,
+    paddingHorizontal: 8,
+    borderRadius: 5,
+    alignSelf: 'flex-start',
   },
   stats: {
-    display: 'flex',
+    flexDirection: 'row',
     justifyContent: 'space-around',
   },
   statItem: {
-    textAlign: 'center',
+    alignItems: 'center',
   },
 };
 
