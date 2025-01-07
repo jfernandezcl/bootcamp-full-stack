@@ -11,6 +11,7 @@ const Routes = () => (
     <Route path="/repository/:id" component={SingleRepository} />
     <Route path="/create-review" component={ReviewForm} />
     <Route exact path="/signup" component={SignUpForm} />
+    <Route path="/repository/:id" element={<RepositoryScreen />} />
   </Switch>
 );
 

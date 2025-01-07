@@ -1,10 +1,15 @@
+// src/graphql/mutations.js
+
 import { gql } from '@apollo/client';
 
-export const CREATE_USER = gql`
-  mutation CreateUser($username: String!, $password: String!) {
-    createUser(username: $username, password: $password) {
+export const DELETE_REVIEW = gql`
+  mutation deleteReview($id: ID!) {
+    deleteReview(id: $id) {
       id
-      username
+      repository {
+        id
+        fullName
+      }
     }
   }
 `;
