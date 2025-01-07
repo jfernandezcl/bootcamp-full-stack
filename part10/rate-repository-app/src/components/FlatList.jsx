@@ -1,83 +1,63 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
+import React, { useState, useCallback } from 'react';
+import { View, Text, FlatList, StyleSheet, ActivityIndicator } from 'react-native';
 import { useQuery } from '@apollo/client';
-import { useDebounce } from 'use-debounce';
-import { useHistory } from 'react-router-native';
-import { SEARCH_REPOSITORIES } from '../graphql/queries';  // Asegúrate de tener esta consulta definida
+import { GET_REVIEWS } from '../graphql/queries';  // Asegúrate de tener esta consulta
 
-const RepositoryList = () => {
-  const [searchKeyword, setSearchKeyword] = useState('');
-  const [debouncedSearchKeyword] = useDebounce(searchKeyword, 500);  // Aplica el debouncing con un retraso de 500ms
-  const { data, loading, error } = useQuery(SEARCH_REPOSITORIES, {
-    variables: { searchKeyword: debouncedSearchKeyword },
+const ReviewList = ({ repositoryId }) => {
+  const [after, setAfter] = useState(null);
+  const { data, loading, error, fetchMore } = useQuery(GET_REVIEWS, {
+    variables: {
+      repositoryId,
+      first: 10,  // Número inicial de reseñas
+      after,
+    },
   });
-  const history = useHistory();
 
-  if (loading) return <Text>Cargando...</Text>;
-  if (error) return <Text>Error al cargar los repositorios.</Text>;
+  const handleEndReached = useCallback(() => {
+    if (data?.repository?.reviews?.pageInfo?.hasNextPage) {
+      fetchMore({
+        variables: {
+          after: data.repository.reviews.pageInfo.endCursor,
+        },
+      }).then(() => {
+        setAfter(data.repository.reviews.pageInfo.endCursor);
+      });
+    }
+  }, [data, fetchMore]);
 
-  const handlePress = (id) => {
-    history.push(`/repository/${id}`); // Navegar al repositorio seleccionado
-  };
+  if (loading && !data) return <ActivityIndicator size="large" />;
+  if (error) return <Text>Error al cargar las reseñas.</Text>;
+
+  const renderItem = ({ item }) => (
+    <View style={styles.review}>
+      <Text style={styles.username}>{item.node.user.username}</Text>
+      <Text>{item.node.text}</Text>
+      <Text>Rating: {item.node.rating}</Text>
+      <Text>Created at: {item.node.createdAt}</Text>
+    </View>
+  );
 
   return (
-    <View style={styles.container}>
-      <TextInput
-        style={styles.searchInput}
-        placeholder="Buscar repositorios..."
-        value={searchKeyword}
-        onChangeText={setSearchKeyword} // Actualiza el valor al escribir
-      />
-      <FlatList
-        data={data.repositories.edges}
-        keyExtractor={(item) => item.node.id}
-        ListHeaderComponent={
-          <View style={styles.header}>
-            <Text style={styles.headerText}>Repositorios</Text>
-          </View>
-        }
-        renderItem={({ item }) => (
-          <TouchableOpacity onPress={() => handlePress(item.node.id)}>
-            <View style={styles.repository}>
-              <Text style={styles.repositoryName}>{item.node.fullName}</Text>
-            </View>
-          </TouchableOpacity>
-        )}
-      />
-    </View>
+    <FlatList
+      data={data.repository.reviews.edges}
+      keyExtractor={(item) => item.node.id}
+      renderItem={renderItem}
+      onEndReached={handleEndReached}
+      onEndReachedThreshold={0.1}  // Carga más reseñas cuando esté cerca del final
+      ListFooterComponent={loading && <ActivityIndicator size="small" />}
+    />
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    paddingTop: 20,
-    paddingHorizontal: 10,
-  },
-  searchInput: {
-    height: 40,
-    borderColor: '#ccc',
-    borderWidth: 1,
-    borderRadius: 5,
-    marginBottom: 15,
-    paddingLeft: 10,
-  },
-  header: {
-    paddingVertical: 10,
-  },
-  headerText: {
-    fontSize: 24,
-    fontWeight: 'bold',
-  },
-  repository: {
-    padding: 10,
+  review: {
+    padding: 15,
     borderBottomWidth: 1,
-    borderBottomColor: '#ccc',
+    borderBottomColor: '#ddd',
   },
-  repositoryName: {
-    fontSize: 18,
+  username: {
     fontWeight: 'bold',
   },
 });
 
-export default RepositoryList;
+export default ReviewList;
