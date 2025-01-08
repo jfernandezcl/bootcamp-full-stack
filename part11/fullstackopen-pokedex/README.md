@@ -15,3 +15,4 @@ Start by running `npm install` inside the project folder
 `npm run start-prod` to run your production build
 
 11.17 Protection added to the branch and exercise completed
+11.21 Main Branch Protection and Traction Request
