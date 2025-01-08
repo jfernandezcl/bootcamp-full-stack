@@ -1,4 +1,4 @@
-name: Trigger Render Deployment
+name: Deployment pipeline
 
 on:
   push:
@@ -6,11 +6,42 @@ on:
       - main
 
 jobs:
-  deploy:
-    runs-on: ubuntu-latest
+  deployment:
+    runs-on: ubuntu-20.04
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
-      - name: Trigger Render deployment
-        run: curl https://api.render.com/deploy/srv-
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run tests
+        run: npm test
+
+      - name: Deploy application
+        run: npm run deploy
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Notify success
+        if: ${{ success() }}
+        uses: Ilshidur/discord-webhook-notify@v2.3.0
+        with:
+          webhook-url: ${{ secrets.DISCORD_WEBHOOK }}
+          message: |
+            🚀 **Deployment Successful!**
+            A new version has been deployed to production.
+            Commit: ${{ github.sha }}
+            Branch: ${{ github.ref_name }}
+
+      - name: Notify failure
+        if: ${{ failure() }}
+        uses: Ilshidur/discord-webhook-notify@v2.3.0
+        with:
+          webhook-url: ${{ secrets.DISCORD_WEBHOOK }}
+          message: |
+            ❌ **Build Failed**
+            The build failed during deployment.
+            Commit: ${{ github.sha }}
+            Author: ${{ github.event.head_commit.author.name }}
+            Message: ${{ github.event.head_commit.message }}
