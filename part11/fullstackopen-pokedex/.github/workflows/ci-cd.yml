@@ -1,0 +1,51 @@
+name: Pokedex CI/CD
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      # 1. Clonar el repositorio
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # 2. Configurar Node.js
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      # 3. Instalar dependencias del backend
+      - name: Install backend dependencies
+        run: |
+          cd backend
+          npm install
+
+      # 4. Instalar dependencias del frontend
+      - name: Install frontend dependencies
+        run: |
+          cd frontend
+          npm install
+
+      # 5. Ejecutar tests
+      - name: Run tests
+        run: |
+          cd backend
+          npm test
+
+      # 6. Construir el frontend
+      - name: Build frontend
+        run: |
+          cd frontend
+          npm run build
+
+      # 7. Despliegue (personaliza según tu servicio)
+      - name: Deploy to Heroku
+        env:
+          HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
+        run: |
+          heroku deploy ...
