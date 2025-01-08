@@ -1,0 +1,39 @@
+name: Build, Lint and Test
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Paso 1: Check out el código del repositorio
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      # Paso 2: Configurar Node.js
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: "16"
+      # Paso 3: Instalar dependencias
+      - name: Install dependencies
+        run: npm install
+
+      # Paso 4: Ejecutar ESLint (Linting)
+      - name: Run ESLint
+        run: npx eslint .
+
+      # Paso 5: Construir el proyecto (comando de construcción)
+      - name: Build the project
+        run: npm run build
+
+      # Paso 6: Ejecutar pruebas
+      - name: Run tests
+        run: npm test
