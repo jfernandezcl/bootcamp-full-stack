@@ -3,7 +3,8 @@ module.exports = {
     "browser": true,
     "es6": true,
     "jest/globals": true,
-    "node": true // Habilita el entorno de Node.js
+    "node": true,
+    "mocha": true
   },
   "extends": [
     "eslint:recommended",
