@@ -12,7 +12,6 @@ jobs:
   simple_deployment_pipeline:
     runs-on: ubuntu-20.04
     steps:
-      # Aquí van los pasos actuales del pipeline
       - name: Checkout code
         uses: actions/checkout@v3
 
@@ -21,10 +20,9 @@ jobs:
         with:
           node-version: "16"
 
-      # Otros pasos para lint, pruebas y despliegue
       - name: Deploy
-        if: ${{ github.event_name == 'push' }}
-        run: echo "Deploy step"
+        if: ${{ github.event_name == 'push' && !contains(github.event.head_commit.message, '#skip') }}
+        run: echo "Deploying application"
 
   tag_release:
     needs: [simple_deployment_pipeline]
@@ -34,6 +32,7 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Bump version and push tag
+        if: ${{ github.event_name == 'push' && !contains(github.event.head_commit.message, '#skip') }}
         uses: anothrNick/github-tag-action@1.64.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
