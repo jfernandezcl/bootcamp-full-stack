@@ -1,0 +1,23 @@
+name: Health Check
+
+on:
+  schedule:
+    # Ejecuta el flujo de trabajo todos los días a las 2:00 AM UTC
+    - cron: "0 2 * * *"
+  workflow_dispatch: # Permite ejecutar el flujo de trabajo manualmente
+  push:
+    branches:
+      - main
+
+jobs:
+  health_check:
+    runs-on: ubuntu-20.04
+
+    steps:
+      - name: Check application health
+        uses: jakejarvis/url-health-check@v2.0.0
+        with:
+          url: "https://your-app-url.com/health" # Cambia esta URL por la de tu aplicación
+          retries: 3 # Intenta 3 veces antes de fallar
+          timeout: 10 # Tiempo máximo en segundos para esperar una respuesta
+          expected-status-codes: 200 # Código esperado
