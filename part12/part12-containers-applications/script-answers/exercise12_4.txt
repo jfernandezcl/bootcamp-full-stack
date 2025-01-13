@@ -1,0 +1,21 @@
+Ejercicio 12.4 completado. Instalación de Node y ejecución del archivo index.js dentro del contenedor:
+
+1. Ingresé al contenedor con el siguiente comando:
+   `winpty docker exec -it <container_id> bash`
+
+2. Instalé `curl` en el contenedor para poder instalar Node.js:
+   `apt update && apt install -y curl`
+
+3. Instalé Node.js utilizando el script de NodeSource:
+   `curl -sL https://deb.nodesource.com/setup_20.x | bash`
+   `apt install -y nodejs`
+
+4. Verifiqué la instalación de Node.js:
+   `node -v`
+
+5. Navegué al directorio de la aplicación y ejecuté el archivo `index.js`:
+   `cd /usr/src/app`
+   `node /usr/src/app/index.js`
+
+6. El contenedor imprimió correctamente "Hello World" al ejecutar el archivo.
+
