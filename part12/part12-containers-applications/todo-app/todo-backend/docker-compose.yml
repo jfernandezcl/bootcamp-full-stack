@@ -1,0 +1,12 @@
+version: "3"
+services:
+  todo-backend:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      - MONGO_URL=your_mongo_url
+      - REDIS_URL=your_redis_url
+    volumes:
+      - .:/usr/src/app
+    restart: always
