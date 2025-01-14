@@ -1,59 +1,50 @@
 version: "3"
 services:
-  nginx:
-    image: nginx:1.20.1
-    container_name: reverse-proxy
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile # Usamos el Dockerfile para producción
+    container_name: frontend
     volumes:
-      - ./nginx.conf:/etc/nginx/nginx.conf:ro # Monta el archivo de configuración de Nginx
+      - ./frontend:/usr/src/app # Sincroniza los archivos del frontend con el contenedor
     ports:
-      - 80:80 # Exponemos el puerto 80 para acceder al frontend y backend a través de Nginx
-    depends_on:
-      - todo-frontend
-      - todo-backend # Espera a que los servicios estén listos
+      - 80:80 # Exponemos el puerto 80 para Nginx
 
-  todo-frontend:
+  backend:
     build:
-      context: ./todo-frontend
-      dockerfile: Dockerfile # Usamos el Dockerfile de producción para el frontend
-    container_name: todo-frontend
+      context: ./backend
+      dockerfile: Dockerfile # Usamos el Dockerfile para producción
+    container_name: backend
+    volumes:
+      - ./backend:/usr/src/app # Sincroniza los archivos del backend con el contenedor
+    ports:
+      - 5000:5000 # Exponemos el puerto 5000 para la API del backend
     environment:
-      - VITE_BACKEND_URL=http://localhost/api # URL para conectarse al backend
-    networks:
-      - app-network
+      - NODE_ENV=production # Configuramos el entorno como producción
     depends_on:
-      - nginx
+      - mongo # El backend depende de MongoDB
 
-  todo-backend:
-    build:
-      context: ./todo-backend
-      dockerfile: Dockerfile # Usamos el Dockerfile de producción para el backend
-    container_name: todo-backend
-    environment:
-      - MONGO_URL=mongodb://mongo:27017/todolist # Configuración de la base de datos
-      - REDIS_URL=redis://redis:6379 # Configuración de Redis
-    networks:
-      - app-network
+  nginx:
+    image: nginx:alpine
+    container_name: nginx
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro # Montamos la configuración de Nginx
+    ports:
+      - 80:80 # Exponemos el puerto 80 para acceder a la aplicación
     depends_on:
-      - nginx
-      - mongo
-      - redis
+      - frontend
+      - backend # Nginx depende del frontend y backend
 
   mongo:
     image: mongo:latest
     container_name: mongo
     volumes:
-      - mongo_data:/data/db # Volumen para MongoDB
-    networks:
-      - app-network
-
-  redis:
-    image: redis:latest
-    container_name: redis
+      - mongo_data:/data/db # Volumen para la persistencia de los datos de MongoDB
     networks:
       - app-network
 
 volumes:
-  mongo_data: # Volumen para la persistencia de datos en MongoDB
+  mongo_data: # Volumen para MongoDB
 
 networks:
   app-network:
