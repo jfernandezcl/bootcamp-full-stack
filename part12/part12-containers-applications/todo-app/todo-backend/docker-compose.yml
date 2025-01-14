@@ -1,32 +1,40 @@
 version: "3"
 services:
-  todo-backend:
-    build: .
-    ports:
-      - "3000:3000"
-    environment:
-      - MONGO_URL=your_mongo_url
-      - REDIS_URL=redis://redis:6379
+  server:
+    build:
+      context: .
+      dockerfile: dev.Dockerfile
     volumes:
-      - .:/usr/src/app
+      - .:/usr/src/app # Sincroniza los archivos locales con el contenedor
+      - /usr/src/app/node_modules # Evita sobrescribir node_modules
+    ports:
+      - "3000:3000" # Expone el puerto del backend
+    environment:
+      - REDIS_URL=redis://redis:6379 # URL de Redis, usando el nombre del servicio de Redis en Docker Compose
+      - MONGO_URL=mongodb://mongo:27017/todolist # URL de MongoDB, usando el nombre del servicio de Mongo en Docker Compose
+    depends_on:
+      - redis # Asegura que Redis se inicie antes que el backend
+      - mongo # Asegura que MongoDB se inicie antes que el backend
     restart: always
 
   redis:
-    image: redis:latest
-    ports:
-      - "6379:6379"
+    image: redis:latest # Usa la imagen oficial de Redis
     volumes:
-      - redis_data:/data
-    restart: always
+      - redis_data:/data # Volumen persistente para Redis
+    networks:
+      - backend_network
 
   mongo:
-    image: mongo
-    ports:
-      - "27017:27017"
+    image: mongo:latest # Usa la imagen oficial de MongoDB
     volumes:
-      - mongo_data:/data/db
-    restart: always
+      - mongo_data:/data/db # Volumen persistente para MongoDB
+    networks:
+      - backend_network
 
 volumes:
   redis_data:
   mongo_data:
+
+networks:
+  backend_network:
+    driver: bridge

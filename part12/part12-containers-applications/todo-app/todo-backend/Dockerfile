@@ -1,20 +1,23 @@
-# Usa una imagen base oficial de Node.js
+# Usa una imagen base de Node.js
 FROM node:16
 
-# Establece el directorio de trabajo en el contenedor
+# Establece el directorio de trabajo
 WORKDIR /usr/src/app
 
-# Copia el package.json y package-lock.json para instalar dependencias
+# Copia los archivos de configuración y dependencias
 COPY package*.json ./
 
 # Instala las dependencias
 RUN npm install
 
-# Copia el resto de los archivos de la aplicación
+# Instala nodemon para reiniciar el servidor durante el desarrollo
+RUN npm install -g nodemon
+
+# Copia el código de la aplicación
 COPY . .
 
-# Expone el puerto que usará la aplicación (puerto 3000 por defecto)
+# Expone el puerto para el backend
 EXPOSE 3000
 
-# Define el comando para iniciar la aplicación
-CMD ["npm", "start"]
+# Usa nodemon para iniciar el servidor
+CMD ["nodemon", "src/index.js"]
