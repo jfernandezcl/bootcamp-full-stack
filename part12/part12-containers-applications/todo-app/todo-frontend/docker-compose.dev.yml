@@ -1,0 +1,16 @@
+version: "3"
+services:
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000" # Exponer el puerto de desarrollo
+    volumes:
+      - .:/usr/src/app # Sincroniza el código fuente local con el contenedor
+      - /usr/src/app/node_modules # Evita que los node_modules se sobreescriban
+    environment:
+      - VITE_BACKEND_URL=http://localhost:3000 # URL del backend
+    command: npm start # Inicia la aplicación de React en modo desarrollo
+    working_dir: /usr/src/app # Establece el directorio de trabajo dentro del contenedor
+    restart: always
