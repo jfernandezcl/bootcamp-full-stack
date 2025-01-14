@@ -2,34 +2,31 @@ version: "3"
 services:
   todo-backend:
     build: .
-    container_name: todo-backend
     ports:
       - "3000:3000"
     environment:
-      - MONGO_URL=mongodb://mongo:27017/todo-app
+      - MONGO_URL=your_mongo_url
       - REDIS_URL=redis://redis:6379
     volumes:
       - .:/usr/src/app
     restart: always
-    depends_on:
-      - mongo
-      - redis
+
+  redis:
+    image: redis:latest
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    restart: always
 
   mongo:
     image: mongo
-    container_name: mongo
     ports:
       - "27017:27017"
     volumes:
-      - mongo-data:/data/db
-    restart: always
-
-  redis:
-    image: redis
-    container_name: redis
-    ports:
-      - "6379:6379"
+      - mongo_data:/data/db
     restart: always
 
 volumes:
-  mongo-data:
+  redis_data:
+  mongo_data:
