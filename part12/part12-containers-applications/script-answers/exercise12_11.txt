@@ -1,0 +1,37 @@
+# 1. Acceder al contenedor de Redis usando docker exec
+docker exec -it <nombre_del_contenedor_de_redis> redis-cli
+
+# 2. Verificar las claves existentes
+KEYS *
+
+# 3. Verificar el valor de la clave 'added_todos' (el contador de tareas pendientes)
+GET added_todos
+
+# 4. Establecer el valor del contador en 9001
+SET added_todos 9001
+
+# 5. Verificar que el valor se haya actualizado
+GET added_todos
+
+# 6. Acceder a la página de estadísticas para asegurarse de que el valor del contador ha sido actualizado
+# Abre un navegador o usa curl para verificar la página
+curl http://localhost:3000/statistics
+
+# 7. Crear una nueva tarea utilizando Postman
+# Realiza una solicitud POST a /todos con el cuerpo: { "text": "Nueva tarea" }
+# Puedes hacer esto desde Postman, asegurándote de que la respuesta sea exitosa.
+
+# 8. Verificar que el contador haya aumentado en Redis
+GET added_todos
+
+# 9. Eliminar la clave 'added_todos' desde redis-cli
+DEL added_todos
+
+# 10. Verificar que el contador no exista y se vuelva a 0
+GET added_todos
+
+# 11. Crear una nueva tarea nuevamente utilizando Postman
+# Realiza una solicitud POST a /todos con el cuerpo: { "text": "Otra tarea" }
+
+# 12. Verificar que el contador ahora comience desde 1
+GET added_todos
