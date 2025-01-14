@@ -1,0 +1,52 @@
+version: "3"
+services:
+  nginx:
+    image: nginx:latest
+    container_name: nginx-proxy
+    volumes:
+      - ./nginx.dev.conf:/etc/nginx/nginx.conf # Monta la configuración de Nginx
+    ports:
+      - "80:80" # Expone el puerto 80 del contenedor
+    depends_on:
+      - todo-frontend
+      - todo-backend # Asegura que el frontend y el backend estén listos antes de iniciar Nginx
+
+  todo-frontend:
+    image: todo-frontend:latest # Se asume que el frontend ya fue construido previamente
+    container_name: todo-frontend
+    ports:
+      - "3000:3000" # Exponemos el puerto del frontend
+    networks:
+      - app-network
+
+  todo-backend:
+    image: todo-backend:latest # Se asume que el backend ya fue construido previamente
+    container_name: todo-backend
+    ports:
+      - "3001:3000" # Exponemos el puerto del backend
+    environment:
+      - MONGO_URL=mongodb://mongo:27017/todolist
+      - REDIS_URL=redis://redis:6379
+    networks:
+      - app-network
+
+  mongo:
+    image: mongo:latest
+    container_name: mongo
+    volumes:
+      - mongo_data:/data/db
+    networks:
+      - app-network
+
+  redis:
+    image: redis:latest
+    container_name: redis
+    networks:
+      - app-network
+
+volumes:
+  mongo_data:
+
+networks:
+  app-network:
+    driver: bridge
