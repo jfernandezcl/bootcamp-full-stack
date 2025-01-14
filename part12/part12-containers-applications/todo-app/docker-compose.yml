@@ -1,0 +1,60 @@
+version: "3"
+services:
+  nginx:
+    image: nginx:1.20.1
+    container_name: reverse-proxy
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro # Monta el archivo de configuración de Nginx
+    ports:
+      - 80:80 # Exponemos el puerto 80 para acceder al frontend y backend a través de Nginx
+    depends_on:
+      - todo-frontend
+      - todo-backend # Espera a que los servicios estén listos
+
+  todo-frontend:
+    build:
+      context: ./todo-frontend
+      dockerfile: Dockerfile # Usamos el Dockerfile de producción para el frontend
+    container_name: todo-frontend
+    environment:
+      - VITE_BACKEND_URL=http://localhost/api # URL para conectarse al backend
+    networks:
+      - app-network
+    depends_on:
+      - nginx
+
+  todo-backend:
+    build:
+      context: ./todo-backend
+      dockerfile: Dockerfile # Usamos el Dockerfile de producción para el backend
+    container_name: todo-backend
+    environment:
+      - MONGO_URL=mongodb://mongo:27017/todolist # Configuración de la base de datos
+      - REDIS_URL=redis://redis:6379 # Configuración de Redis
+    networks:
+      - app-network
+    depends_on:
+      - nginx
+      - mongo
+      - redis
+
+  mongo:
+    image: mongo:latest
+    container_name: mongo
+    volumes:
+      - mongo_data:/data/db # Volumen para MongoDB
+    networks:
+      - app-network
+
+  redis:
+    image: redis:latest
+    container_name: redis
+    networks:
+      - app-network
+
+volumes:
+  mongo_data: # Volumen para la persistencia de datos en MongoDB
+
+networks:
+  app-network:
+    driver: bridge

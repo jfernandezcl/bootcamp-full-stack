@@ -1,23 +1,17 @@
-# Usa una imagen base de Node.js
+# Usamos una imagen base de Node.js
 FROM node:16
 
-# Establece el directorio de trabajo
+# Establecemos el directorio de trabajo
 WORKDIR /usr/src/app
 
-# Copia los archivos de configuración y dependencias
-COPY package*.json ./
-
-# Instala las dependencias
-RUN npm install
-
-# Instala nodemon para reiniciar el servidor durante el desarrollo
-RUN npm install -g nodemon
-
-# Copia el código de la aplicación
+# Copiamos los archivos del backend al contenedor
 COPY . .
 
-# Expone el puerto para el backend
+# Instalamos las dependencias
+RUN npm install --production
+
+# Exponemos el puerto 3000 donde corre el backend
 EXPOSE 3000
 
-# Usa nodemon para iniciar el servidor
-CMD ["nodemon", "src/index.js"]
+# Iniciamos la aplicación
+CMD ["node", "server.js"]
