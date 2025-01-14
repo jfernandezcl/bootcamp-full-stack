@@ -2,5 +2,8 @@
   "dependencies": {
     "express": "^4.21.2",
     "mongoose": "^8.9.4"
+  },
+  "scripts": {
+    "test": "react-scripts test --watchAll=false"
   }
 }

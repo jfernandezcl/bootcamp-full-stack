@@ -1,23 +1,28 @@
-# Utiliza una imagen base de Node.js
-FROM node:18
+# Etapa 1: Construcción del entorno de pruebas
+FROM node:18 as test-stage
 
-# Establece el directorio de trabajo
 WORKDIR /app
 
-# Copia los archivos de la aplicación
 COPY package*.json ./
 RUN npm install
 
-# Copia el resto del código fuente
+# Copia los archivos de la aplicación
 COPY . .
 
-# Establece la variable de entorno para el backend
-ENV VITE_BACKEND_URL=http://localhost:3000  # Reemplaza con la URL de tu backend
+# Ejecuta las pruebas
+RUN npm test
 
-# Construye la aplicación
-RUN npm run build
+# Etapa 2: Construcción de la imagen final
+FROM node:18
 
-# Expone el puerto en el que se ejecutará la app
+WORKDIR /app
+
+COPY package*.json ./
+RUN npm install --only=production
+
+COPY . .
+
+# Expone el puerto de la aplicación
 EXPOSE 5173
 
 # Inicia la aplicación
