@@ -1,34 +1,44 @@
 version: "3"
 services:
   nginx:
-    image: nginx:latest
-    container_name: nginx-proxy
+    image: nginx:1.20.1
+    container_name: reverse-proxy
     volumes:
-      - ./nginx.dev.conf:/etc/nginx/nginx.conf # Monta la configuración de Nginx
+      - ./nginx.dev.conf:/etc/nginx/nginx.conf:ro # Montar la configuración de Nginx
     ports:
-      - "80:80" # Expone el puerto 80
+      - 8080:80 # Exponer solo el puerto 8080
     depends_on:
       - todo-frontend
-      - todo-backend # Espera que el backend esté listo
+      - todo-backend # Espera a que frontend y backend estén listos
 
   todo-frontend:
-    image: todo-frontend:latest
+    build:
+      context: ./todo-frontend
+      dockerfile: dev.Dockerfile # Usa el Dockerfile de desarrollo para el frontend
     container_name: todo-frontend
-    ports:
-      - "3000:3000" # Expone el puerto del frontend
+    volumes:
+      - ./todo-frontend:/usr/src/app # Volumen para poder editar el código en tiempo real
+    environment:
+      - VITE_BACKEND_URL=http://localhost:8080/api # Actualiza la URL para acceder al backend
     networks:
       - app-network
+    depends_on:
+      - nginx
 
   todo-backend:
-    image: todo-backend:latest
+    build:
+      context: ./todo-backend
+      dockerfile: dev.Dockerfile # Usa el Dockerfile de desarrollo para el backend
     container_name: todo-backend
-    ports:
-      - "3000:3000" # Expone el puerto del backend
+    volumes:
+      - ./todo-backend:/usr/src/app # Volumen para poder editar el código en tiempo real
     environment:
       - MONGO_URL=mongodb://mongo:27017/todolist
       - REDIS_URL=redis://redis:6379
     networks:
       - app-network
+    depends_on:
+      - nginx
 
   mongo:
     image: mongo:latest
