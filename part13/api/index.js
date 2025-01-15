@@ -1,10 +1,15 @@
-import pool from '../db/index.js';
+import express from 'express';
+import bodyParser from 'body-parser';
+import blogsHandler from './api/blogs.js';
 
-export default async function handler(req, res) {
-  if (req.method === 'GET') {
-    const result = await pool.query('SELECT NOW()');
-    res.status(200).json({ message: 'API is working!', time: result.rows[0].now });
-  } else {
-    res.status(405).json({ error: 'Method not allowed' });
-  }
-}
+const app = express();
+app.use(bodyParser.json());
+
+// Ruta para los blogs
+app.use('/api/blogs', blogsHandler);
+
+// Arranque del servidor
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+});
