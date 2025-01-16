@@ -8,7 +8,7 @@ export const createBlog = async (title, author, url, userId) => {
   return result.rows[0];
 };
 
-// Obtener blogs con filtrado por palabra clave en el título (MODIFICADO)
+// Obtener blogs con filtrado por palabra clave en title o author (MODIFICADO)
 export const getBlogs = async (search) => {
   let query = `
     SELECT blogs.*, 
@@ -20,7 +20,7 @@ export const getBlogs = async (search) => {
   const params = [];
 
   if (search) {
-    query += ` WHERE LOWER(blogs.title) LIKE $1`;
+    query += ` WHERE LOWER(blogs.title) LIKE $1 OR LOWER(blogs.author) LIKE $1`;
     params.push(`%${search.toLowerCase()}%`);
   }
 

@@ -4,7 +4,7 @@ import authMiddleware from '../middlewares/authMiddleware.js';
 
 const router = express.Router();
 
-// Obtener todos los blogs con filtrado opcional por palabra clave en el título
+// Obtener todos los blogs con filtrado opcional por title o author
 router.get('/', async (req, res) => {
   const search = req.query.search || '';
 
