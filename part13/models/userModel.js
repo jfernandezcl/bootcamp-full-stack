@@ -1,42 +1,26 @@
 import pool from '../db/index.js';
+import bcrypt from 'bcryptjs'; // NUEVO
 
-// Función para validar si el username es un email
-const isValidEmail = (email) => {
+const isValidEmail = (email) => { // NUEVO
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   return emailRegex.test(email);
 };
 
-// Crear un nuevo usuario
-export const createUser = async (name, username) => {
-  if (!name || !username) {
-    throw new Error('El nombre y el correo electrónico son obligatorios');
-  }
-  if (!isValidEmail(username)) {
-    throw new Error('El nombre de usuario debe ser un correo electrónico válido');
-  }
+export const createUser = async (name, username, password) => { // NUEVO
+  if (!name || !username || !password) throw new Error('El nombre, correo y contraseña son obligatorios');
+  if (!isValidEmail(username)) throw new Error('El nombre de usuario debe ser un correo electrónico válido');
+
+  const salt = await bcrypt.genSalt(10);
+  const hashedPassword = await bcrypt.hash(password, salt);
 
   const result = await pool.query(
-    'INSERT INTO users (name, username) VALUES ($1, $2) RETURNING *',
-    [name, username]
+    'INSERT INTO users (name, username, password) VALUES ($1, $2, $3) RETURNING *',
+    [name, username, hashedPassword]
   );
   return result.rows[0];
 };
 
-// Obtener todos los usuarios
-export const getUsers = async () => {
-  const result = await pool.query('SELECT * FROM users');
-  return result.rows;
-};
-
-// Actualizar el nombre de usuario
-export const updateUsername = async (oldUsername, newUsername) => {
-  if (!isValidEmail(newUsername)) {
-    throw new Error('El nuevo nombre de usuario debe ser un correo electrónico válido');
-  }
-
-  const result = await pool.query(
-    'UPDATE users SET username = $1, updated_at = CURRENT_TIMESTAMP WHERE username = $2 RETURNING *',
-    [newUsername, oldUsername]
-  );
+export const getUserByUsername = async (username) => { // NUEVO
+  const result = await pool.query('SELECT * FROM users WHERE username = $1', [username]);
   return result.rows[0];
 };

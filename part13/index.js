@@ -1,18 +1,16 @@
 import express from 'express';
 import bodyParser from 'body-parser';
-import 'express-async-errors';
-import blogsRouter from './routes/blogsRoutes.js';
-import usersRouter from './routes/userRoutes.js';
-import errorHandler from './middlewares/errorHandler.js';
+import blogsHandler from './api/blogs.js';
+import loginHandler from './api/login.js'; // NUEVO
 
 const app = express();
 app.use(bodyParser.json());
 
-app.use('/api/blogs', blogsRouter);
-app.use('/api/users', usersRouter);
+// Ruta para los blogs
+app.use('/api/blogs', blogsHandler);
+app.use('/api/login', loginHandler); // NUEVO
 
-app.use(errorHandler);
-
+// Arranque del servidor
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
