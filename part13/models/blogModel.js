@@ -8,24 +8,31 @@ export const createBlog = async (title, author, url, userId) => {
   return result.rows[0];
 };
 
-// Obtener todos los blogs con la información del usuario que los creó (MODIFICADO)
-export const getBlogs = async () => {
-  const result = await pool.query(
-    `SELECT blogs.*, 
-            json_build_object('id', users.id, 'name', users.name, 'username', users.username) AS user 
-     FROM blogs 
-     JOIN users ON blogs.user_id = users.id`
-  );
+// Obtener blogs con filtrado por palabra clave en el título (MODIFICADO)
+export const getBlogs = async (search) => {
+  let query = `
+    SELECT blogs.*, 
+           json_build_object('id', users.id, 'name', users.name, 'username', users.username) AS user 
+    FROM blogs 
+    JOIN users ON blogs.user_id = users.id
+  `;
+
+  const params = [];
+
+  if (search) {
+    query += ` WHERE LOWER(blogs.title) LIKE $1`;
+    params.push(`%${search.toLowerCase()}%`);
+  }
+
+  const result = await pool.query(query, params);
   return result.rows;
 };
 
-// Obtener un blog por ID
 export const getBlogById = async (id) => {
   const result = await pool.query('SELECT * FROM blogs WHERE id = $1', [id]);
   return result.rows[0];
 };
 
-// Eliminar un blog solo si el usuario es el creador (MODIFICADO)
 export const deleteBlog = async (id, userId) => {
   const blog = await getBlogById(id);
   if (!blog) return null;
