@@ -1,18 +1,18 @@
-
+import User from '../models/userModel.js';
 import { createUser, getUsers, updateUsername } from '../models/userModel.js';
 
 // Crear un nuevo usuario
-export const addUser = async (req, res) => {
-  const { name, username } = req.body;
-  if (!name || !username) {
-    return res.status(400).json({ error: 'El nombre y el nombre de usuario son obligatorios' });
-  }
-
+export const addUser = async (req, res, next) => {
   try {
-    const user = await createUser(name, username);
+    const { name, username } = req.body;
+    if (!name || !username) {
+      return res.status(400).json({ error: ['El nombre y el correo electrónico son obligatorios'] });
+    }
+
+    const user = await User.create({ name, username });
     res.status(201).json(user);
   } catch (error) {
-    res.status(500).json({ error: 'Error al crear el usuario' });
+    next(error);
   }
 };
 
