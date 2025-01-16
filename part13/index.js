@@ -12,6 +12,7 @@ app.use(bodyParser.json());
 // Rutas
 app.use('/api/blogs', blogsRouter);
 app.use('/api', authRouter);
+app.use('/api/authors', authorsRouter);
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
