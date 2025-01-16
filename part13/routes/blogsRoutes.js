@@ -1,18 +1,50 @@
 import express from 'express';
-import { getBlogs, createBlog, deleteBlog, updateLikes } from '../controllers/blogsController.js';
+import { createBlog, getBlogs, deleteBlog } from '../models/blogModel.js';
+import authMiddleware from '../middlewares/authMiddleware.js';
 
 const router = express.Router();
 
-// Ruta GET para obtener todos los blogs
-router.get('/', getBlogs);
+// Obtener todos los blogs con información del usuario creador
+router.get('/', async (req, res) => {
+  try {
+    const blogs = await getBlogs();
+    res.json(blogs);
+  } catch (error) {
+    res.status(500).json({ error: 'Error al obtener los blogs' });
+  }
+});
 
-// Ruta POST para agregar un nuevo blog
-router.post('/', createBlog);
+// Crear un nuevo blog (requiere autenticación)
+router.post('/', authMiddleware, async (req, res) => {
+  const { title, author, url } = req.body;
+  const userId = req.user.id; // Se obtiene del token
 
-// Ruta DELETE para eliminar un blog por ID
-router.delete('/:id', deleteBlog);
+  if (!title || !url) {
+    return res.status(400).json({ error: 'El título y la URL son obligatorios' });
+  }
 
-// Ruta PUT para actualizar los likes de un blog
-router.put('/:id', updateLikes);
+  try {
+    const newBlog = await createBlog(title, author, url, userId);
+    res.status(201).json(newBlog);
+  } catch (error) {
+    res.status(500).json({ error: 'Error al crear el blog' });
+  }
+});
+
+// Eliminar un blog (solo si el usuario lo creó)
+router.delete('/:id', authMiddleware, async (req, res) => {
+  const { id } = req.params;
+  const userId = req.user.id;
+
+  try {
+    const deletedBlog = await deleteBlog(id, userId);
+    if (!deletedBlog) {
+      return res.status(403).json({ error: 'No tienes permiso para eliminar este blog' });
+    }
+    res.json(deletedBlog);
+  } catch (error) {
+    res.status(500).json({ error: 'Error al eliminar el blog' });
+  }
+});
 
 export default router;

@@ -1,8 +1,14 @@
 import jwt from 'jsonwebtoken';
+import dotenv from 'dotenv';
 
-const authMiddleware = (req, res, next) => { // NUEVO
+dotenv.config();
+
+const authMiddleware = (req, res, next) => {
   const authHeader = req.headers.authorization;
-  if (!authHeader || !authHeader.startsWith('Bearer ')) return res.status(401).json({ error: 'Token no proporcionado' });
+
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    return res.status(401).json({ error: 'Token no proporcionado o inválido' });
+  }
 
   const token = authHeader.split(' ')[1];
 
