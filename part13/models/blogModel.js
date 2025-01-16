@@ -8,7 +8,7 @@ export const createBlog = async (title, author, url, userId) => {
   return result.rows[0];
 };
 
-// Obtener blogs con filtrado por palabra clave en title o author (MODIFICADO)
+// Obtener blogs ordenados por likes en orden descendente (MODIFICADO)
 export const getBlogs = async (search) => {
   let query = `
     SELECT blogs.*, 
@@ -23,6 +23,8 @@ export const getBlogs = async (search) => {
     query += ` WHERE LOWER(blogs.title) LIKE $1 OR LOWER(blogs.author) LIKE $1`;
     params.push(`%${search.toLowerCase()}%`);
   }
+
+  query += ' ORDER BY blogs.likes DESC'; // Ordenar por likes de forma descendente
 
   const result = await pool.query(query, params);
   return result.rows;

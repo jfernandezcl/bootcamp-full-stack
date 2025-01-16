@@ -4,7 +4,7 @@ import authMiddleware from '../middlewares/authMiddleware.js';
 
 const router = express.Router();
 
-// Obtener todos los blogs con filtrado opcional por title o author
+// Obtener todos los blogs ordenados por likes en orden descendente
 router.get('/', async (req, res) => {
   const search = req.query.search || '';
 
