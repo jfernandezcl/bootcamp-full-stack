@@ -9,7 +9,7 @@ export const createUser = async (name, username) => {
   return result.rows[0];
 };
 
-// Obtener todos los usuarios con sus blogs asociados (MODIFICADO)
+// Obtener todos los usuarios con sus blogs asociados
 export const getUsers = async () => {
   const result = await pool.query(
     `SELECT users.*, 
@@ -19,6 +19,35 @@ export const getUsers = async () => {
      GROUP BY users.id`
   );
   return result.rows;
+};
+
+// Obtener un usuario por ID con su lista de lectura
+export const getUserById = async (id) => {
+  const result = await pool.query(
+    `SELECT users.id, users.name, users.username,
+            COALESCE(json_agg(
+              DISTINCT jsonb_build_object(
+                'id', blogs.id,
+                'url', blogs.url,
+                'title', blogs.title,
+                'author', blogs.author,
+                'likes', blogs.likes,
+                'year', blogs.year,
+                'readinglists', jsonb_build_object(
+                  'id', reading_lists.id,
+                  'read', reading_lists.read
+                )
+              )
+            ) FILTER (WHERE blogs.id IS NOT NULL), '[]') AS readings
+     FROM users
+     LEFT JOIN reading_lists ON users.id = reading_lists.user_id
+     LEFT JOIN blogs ON reading_lists.blog_id = blogs.id
+     WHERE users.id = $1
+     GROUP BY users.id;`,
+    [id]
+  );
+
+  return result.rows[0];
 };
 
 // Actualizar el nombre de usuario

@@ -1,9 +1,9 @@
 import User from '../models/userModel.js';
-import { createUser, getUsers, updateUsername } from '../models/userModel.js';
+import { getUsers, updateUsername } from '../models/userModel.js';
 import ReadingList from '../models/readingListModel.js';
 import Blog from '../models/blogModel.js';
 
-// Obtener un usuario por ID con su lista de lectura
+// Obtener un usuario por ID con su lista de lectura y estado de lectura
 export const getUserById = async (req, res) => {
   try {
     const { id } = req.params;
@@ -11,11 +11,11 @@ export const getUserById = async (req, res) => {
     const user = await User.findByPk(id, {
       attributes: ['id', 'name', 'username'],
       include: {
-        model: ReadingList,
-        attributes: ['id'],
-        include: {
-          model: Blog,
-          attributes: ['id', 'url', 'title', 'author', 'likes', 'year']
+        model: Blog,
+        attributes: ['id', 'url', 'title', 'author', 'likes', 'year'],
+        through: {
+          model: ReadingList,
+          attributes: ['id', 'read'] // Se obtiene el estado de lectura y la ID de la tabla de unión
         }
       }
     });
@@ -24,12 +24,20 @@ export const getUserById = async (req, res) => {
       return res.status(404).json({ error: 'Usuario no encontrado' });
     }
 
-    // Formatear la respuesta para que devuelva solo la lista de blogs
+    // Formatear la respuesta para incluir el estado de lectura correctamente
     const formattedUser = {
       id: user.id,
       name: user.name,
       username: user.username,
-      readings: user.ReadingLists.map(entry => entry.Blog) // Extraer solo los blogs de la lista de lectura
+      readings: user.Blogs.map(blog => ({
+        ...blog.toJSON(),
+        readinglists: [
+          {
+            id: blog.ReadingList.id,
+            read: blog.ReadingList.read
+          }
+        ]
+      }))
     };
 
     res.json(formattedUser);
