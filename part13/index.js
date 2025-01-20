@@ -3,6 +3,7 @@ import bodyParser from 'body-parser';
 import dotenv from 'dotenv';
 import blogsRouter from './routes/blogs.js';
 import authRouter from './routes/auth.js';
+import readingListRoutes from './routes/readingList.js';
 
 dotenv.config();
 
@@ -13,6 +14,7 @@ app.use(bodyParser.json());
 app.use('/api/blogs', blogsRouter);
 app.use('/api', authRouter);
 app.use('/api/authors', authorsRouter);
+app.use('/api/reading-list', readingListRoutes);
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
