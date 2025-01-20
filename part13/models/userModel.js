@@ -1,5 +1,21 @@
 import pool from '../db/index.js';
 
+export const getUserByUsername = async (username) => {
+  const result = await pool.query(
+    'SELECT * FROM users WHERE username = $1',
+    [username]
+  );
+  return result.rows[0]; // Devuelve el usuario o null
+};
+
+export const toggleUserStatus = async (userId, status) => {
+  const result = await pool.query(
+    'UPDATE users SET disabled = $1 WHERE id = $2 RETURNING *',
+    [status, userId]
+  );
+  return result.rows[0];
+};
+
 // Crear un nuevo usuario
 export const createUser = async (name, username) => {
   const result = await pool.query(

@@ -1,42 +1,35 @@
 import jwt from 'jsonwebtoken';
-import dotenv from 'dotenv';
+import { verifySession } from '../models/sessionModel.js';
+import { getUserByUsername } from '../models/userModel.js';
 
-dotenv.config();
+export const authenticate = async (req, res, next) => {
+  const token = req.headers.authorization?.split(' ')[1]; // Obtener el token del header
 
-const authMiddleware = (req, res, next) => {
-  const authHeader = req.headers.authorization;
-
-  if (!authHeader || !authHeader.startsWith('Bearer ')) {
-    return res.status(401).json({ error: 'Token no proporcionado o inválido' });
+  if (!token) {
+    return res.status(401).json({ error: 'Acceso denegado, token no proporcionado' });
   }
-
-  const token = authHeader.split(' ')[1];
 
   try {
+    // Verificar la validez del token
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = decoded;
-    next();
+
+    // Verificar si la sesión sigue activa
+    const session = await verifySession(token);
+
+    if (!session) {
+      return res.status(401).json({ error: 'Sesión no válida o caducada' });
+    }
+
+    // Verificar si el usuario está deshabilitado
+    const user = await getUserByUsername(decoded.username);
+
+    if (user.disabled) {
+      return res.status(403).json({ error: 'Cuenta deshabilitada' });
+    }
+
+    req.user = decoded; // Guardar información del usuario en la solicitud
+    next(); // Continuar con la solicitud
   } catch (error) {
-    res.status(401).json({ error: 'Token inválido o expirado' });
+    res.status(401).json({ error: 'Token no válido' });
   }
 };
-
-export const authenticate = (req, res, next) => {
-  const authHeader = req.headers.authorization;
-
-  if (!authHeader || !authHeader.startsWith('Bearer ')) {
-    return res.status(401).json({ error: 'Token no proporcionado' });
-  }
-
-  const token = authHeader.split(' ')[1];
-
-  try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = decoded; // Agregar el usuario decodificado al request
-    next();
-  } catch (error) {
-    res.status(401).json({ error: 'Token inválido' });
-  }
-};
-
-export default authMiddleware;
