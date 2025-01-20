@@ -1,17 +1,21 @@
 import ReadingList from '../models/readingList.js';
+import ReadingList from '../models/readingList.js';
 
 // Agregar un blog a la lista de lectura
 export const addToReadingList = async (req, res) => {
   try {
-    const { user_id, blog_id } = req.body;
+    const { blogId, userId } = req.body;
 
-    const entry = await ReadingList.create({ user_id, blog_id });
+    if (!blogId || !userId) {
+      return res.status(400).json({ error: 'BlogId y UserId son obligatorios' });
+    }
+
+    const entry = await ReadingList.create({ blog_id: blogId, user_id: userId });
     res.status(201).json(entry);
   } catch (error) {
     res.status(500).json({ error: 'Error al agregar a la lista de lectura' });
   }
 };
-
 // Obtener la lista de lectura de un usuario
 export const getReadingList = async (req, res) => {
   try {
@@ -41,3 +45,4 @@ export const markAsRead = async (req, res) => {
     res.status(500).json({ error: 'Error al actualizar el estado de lectura' });
   }
 };
+
